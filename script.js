@@ -1,29 +1,20 @@
 const express = require('express');
 const path = require('path');
-const mysql = require("mysql");
+const hbs = require("hbs");
 
 const { addLog } = require('./logging/log');
-const { newConnectionFactory, selectQueryFactory } = require('./db_connection/db_connection');
 const { compose_maket_main_page } = require('./pages_compositors/pages_compositors');
-// const { logLine, reportServerError, reportRequestError, arrayToHash } = require('./utils');
-// const { newConnectionFactory, selectQueryFactory } = require("./utils_db");
-// const { composeMaket_New, composeMaket_IndPage } = require("./makets");
-
-const poolConfig = {
-    connectionLimit: 10,     // полагаем что БД выдержит 10 соединений, т.е. в пуле будет максимум 10 соединений
-    host: 'localhost',   // на каком компьютере расположена база данных
-    user: 'root',    // каким пользователем подключаемся (на учебном сервере - "root")
-    password: 'Hrab-123',    // каким паролем подключаемся (на учебном сервере - "1234")
-    database: 'node_project',     // к какой базе данных подключаемся
-};
-let pool = mysql.createPool(poolConfig);
+const coreDataController = require('./db/controllers/core-data-controller.js');
 
 const webserver = express();
-
 const port = 7480;
-const logFilePath = path.join(__dirname, '_server.log');
+const logFilePath = path.join(__dirname, '/logging/_server.log');
 
-const userRouter = express.Router();
+webserver.set("view engine", "hbs");
+
+webserver.set('views', path.join(__dirname, 'public'));
+
+hbs.registerPartials(__dirname + "/public/components");
 
 webserver.use(
     express.static(path.resolve(__dirname, "public"))
@@ -35,22 +26,29 @@ webserver.get('/', async (req, res, next) => {
     next();
 });
 
-webserver.get('/main-page', async (req, res) => {
+webserver.get('/:urlcode', async (req, res) => {
     // res.sendFile(path.join(__dirname + '/public/index.html'));
-
     let pageUrl = req.params.urlcode;
-    addLog(logFilePath, 'страница, urlcode=' + pageUrl);
+    addLog(logFilePath, 'страница, urlcode = ' + pageUrl);
 
-    let connection = null;
     try {
-        connection = await newConnectionFactory(pool, res);
-        
-        // let mainPageInfo = await selectQueryFactory(connection, `
-        //             select title, content, metakeywords, metadescription
-        //             from main_page
-        //             where url_code=?;`, 
-        //             [pageUrl]);
-        
+        const coreDataInfo = await coreDataController.getCoreData(req, res);
+        console.log(coreDataInfo[0])
+
+        if (coreDataInfo.length !== 1) {
+            addLog(logFilePath, "индивидуальная страница не найдена, urlcode =" + pageUrl);
+            res.status(404).send("Извините, такой страницы у нас нет!");
+        } else {
+            // все новости рендерим по "макету индивидуальной страницы", но можно для разных индивидуальных страниц использовать разные макеты
+            let html = await compose_maket_main_page( // вызываем построение макета индивидуальной страницы
+                { logFilePath },
+                { // данные приложения
+                    mainPageInfo: coreDataInfo[0] // информация о индивидуальной странице
+                }
+            );
+            res.send(html);
+        }
+
     } catch {
 
     }
