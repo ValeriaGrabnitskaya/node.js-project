@@ -27,27 +27,33 @@ webserver.get('/', async (req, res, next) => {
 });
 
 webserver.get('/:urlcode', async (req, res) => {
-    let pageUrl = req.params.urlcode;
-    addLog(logFilePath, 'страница, urlcode = ' + pageUrl);
+    res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
+    // let pageUrl = req.params.urlcode;
+    // addLog(logFilePath, 'страница, urlcode = ' + pageUrl);
 
-    try {
-        const coreDataInfo = await coreDataController.getCoreDataByUrlCode(req, res);
-        if (!coreDataInfo) {
-            addLog(logFilePath, "индивидуальная страница не найдена, urlcode =" + pageUrl);
-            res.status(404).send("Извините, такой страницы у нас нет!");
-        } else {
-            let mainPageData = await compose_maket_main_page(
-                { logFilePath },
-                {
-                    mainPageInfo: coreDataInfo
-                }
-            );
-            res.render("index.hbs", mainPageData);
-        }
+    // try {
+    //     const coreDataInfo = await coreDataController.getCoreDataByUrlCode(req, res);
+    //     if (!coreDataInfo) {
+    //         addLog(logFilePath, "индивидуальная страница не найдена, urlcode =" + pageUrl);
+    //         res.status(404).send("Извините, такой страницы у нас нет!");
+    //     } else {
+    //         let mainPageData = await compose_maket_main_page(
+    //             { logFilePath },
+    //             {
+    //                 mainPageInfo: coreDataInfo
+    //             }
+    //         );
+    //         if (pageUrl === 'main-page') {
+    //             res.render("index.hbs", mainPageData);
+    //         } else {
+    //             // res.render("catalog.hbs", mainPageData);
+    //             res.sendFile('catalog.html');
+    //         }
+    //     }
 
-    } catch(error) {
-        console.log(error);
-    }
+    // } catch (error) {
+    //     console.log(error);
+    // }
 });
 
 // // УРЛы вида /xxx
