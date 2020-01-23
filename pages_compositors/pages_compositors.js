@@ -5,7 +5,6 @@ const Blocks = require('../constants/blocks.js');
 async function compose_maket_main_page(coreData, appData) {
     try {
         const headerData = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
-        console.log('headerData', headerData)
 
         var mainPageData = {
             metakeywords: appData.mainPageInfo.metakeywords,
