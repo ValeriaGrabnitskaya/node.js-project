@@ -8,33 +8,29 @@ const sequelize = new Sequelize("node_project", "root", "L730Mool", {
   }
 });
 
-const CoreData = sequelize.define("core_page_data", {
+const PageContent = sequelize.define("page_content", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false
   },
-  url_code: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  title: {
-    type: Sequelize.STRING,
-    allowNull: true
-  },
   content_id: {
     type: Sequelize.INTEGER,
     allowNull: false
   },
-  metakeywords: {
-    type: Sequelize.STRING,
+  content_order: {
+    type: Sequelize.INTEGER,
     allowNull: false
   },
-  metadescription: {
-    type: Sequelize.STRING,
+  block_type: {
+    type: Sequelize.INTEGER,
     allowNull: false
+  },
+  block_content: {
+    type: Sequelize.STRING,
+    allowNull: true
   }
 });
 
-module.exports = CoreData;
+module.exports = PageContent;

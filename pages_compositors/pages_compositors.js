@@ -1,36 +1,43 @@
-async function compose_maket_main_page(coreData,appData) {
+const pageContentController = require('../db/controllers/page_content_controller.js');
+const imagesController = require('../db/controllers/images-controller.js');
+const Blocks = require('../constants/blocks.js');
 
-    
+async function compose_maket_main_page(coreData, appData) {
+    try {
+        const headerData = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
+        console.log('headerData', headerData)
 
-    // let html = "";
+        var mainPageData = {
+            metakeywords: appData.mainPageInfo.metakeywords,
+            metadescription: appData.mainPageInfo.metadescription,
+            title: appData.mainPageInfo.title
+        };
 
-    // html += `<html lang="ru">\n`;
-    // html += `<head>\n`;
-    // if (appData.indPageInfo.metakeywords)
-    //     html += `<meta name="keywords" content="${appData.indPageInfo.metakeywords}"/>\n`;
-    // if (appData.indPageInfo.metadescription)
-    //     html += `<meta name="description" content="${appData.indPageInfo.metadescription}"/>\n`;
-    // html += `<title>${appData.indPageInfo.title} - ${appData.options.SITENAME.str_value}</title>\n`;
-    // html += `</head>\n`;
+        for (var i = 0; i < headerData.length; i++) {
+            var data = headerData[i];
+            switch (data.block_type) {
+                case Blocks.Header:
+                    mainPageData.header = data.block_content;
+                    break;
+                case Blocks.Image:
+                    const imagesData = await imagesController.getImagesById(data.block_content);
+                    mainPageData.imageUrl = imagesData ? imagesData.url : '';
+                    break;
+            }
+        }
+        return mainPageData;
 
-    // // скомпонуем HTML-код для каждой визуальной части сайта, построив соответствующий контент
-    // let headContentHTMLs = await composeContent(22, coreData, appData); // в макете индивидуальной страницы в шапке - пусть будет всё тот же контент 22
-    // let bottomContentHTMLs = await composeContent(33, coreData, appData); // в макете индивидуальной страницы в подвале - пусть будет всё тот же контент 33
-    // let urlIndPageContentHTMLs = await composeContent(55, coreData, appData); // в макете индивидуальной страницы в "содержимом страницы из УРЛа" - всегда контент 55
-
-    // html += `<table border=1 cellpadding=5 style='width: 100%; border-collapse: collapse'>\n`;
-    // html += `<tr><td><i>ШАПКА</i><br>${headContentHTMLs.join("\n")}</td></tr>\n`;
-    // html += `<tr>\n`;
-    // html += `<td><i>СОДЕРЖИМОЕ СТРАНИЦЫ ИЗ УРЛА</i><br>${urlIndPageContentHTMLs.join("\n")}</td>\n`;
-    // html += `</tr>\n`;
-    // html += `<tr><td><i>ПОДВАЛ</i><br>${bottomContentHTMLs.join("\n")}</td></tr>\n`;
-    // html += `</table>\n`;
-
-    // html += `</html>\n`;
-
-    // return html;
+        // {
+        //     metakeywords: "Мои контакты",
+        //     metadescription: "gavgav@mycorp.com",
+        //     title: "+1234567890",
+        //     image: "+1234567890"
+        // }
+    } catch (error) {
+        console.log(error)
+    }
 }
 
-module.exports={
-    compose_maket_main_page
-}
+module.exports = {
+    compose_maket_main_page,
+};

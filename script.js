@@ -3,7 +3,7 @@ const path = require('path');
 const hbs = require("hbs");
 
 const { addLog } = require('./logging/log');
-const { compose_maket_main_page } = require('./pages_compositors/pages_compositors');
+const { compose_maket_main_page } = require('./pages_compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
 
 const webserver = express();
@@ -27,30 +27,26 @@ webserver.get('/', async (req, res, next) => {
 });
 
 webserver.get('/:urlcode', async (req, res) => {
-    // res.sendFile(path.join(__dirname + '/public/index.html'));
     let pageUrl = req.params.urlcode;
     addLog(logFilePath, 'страница, urlcode = ' + pageUrl);
 
     try {
-        const coreDataInfo = await coreDataController.getCoreData(req, res);
-        console.log(coreDataInfo[0])
-
-        if (coreDataInfo.length !== 1) {
+        const coreDataInfo = await coreDataController.getCoreDataByUrlCode(req, res);
+        if (!coreDataInfo) {
             addLog(logFilePath, "индивидуальная страница не найдена, urlcode =" + pageUrl);
             res.status(404).send("Извините, такой страницы у нас нет!");
         } else {
-            // все новости рендерим по "макету индивидуальной страницы", но можно для разных индивидуальных страниц использовать разные макеты
-            let html = await compose_maket_main_page( // вызываем построение макета индивидуальной страницы
+            let mainPageData = await compose_maket_main_page(
                 { logFilePath },
-                { // данные приложения
-                    mainPageInfo: coreDataInfo[0] // информация о индивидуальной странице
+                {
+                    mainPageInfo: coreDataInfo
                 }
             );
-            res.send(html);
+            res.render("index.hbs", mainPageData);
         }
 
-    } catch {
-
+    } catch(error) {
+        console.log(error);
     }
 });
 

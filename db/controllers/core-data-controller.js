@@ -11,10 +11,14 @@ exports.getCoreData = function () {
 
 exports.getCoreDataByUrlCode = async function (req, res) {
     return new Promise((resolve, reject) => {
-        const urlCode = req.params.urlCode;
-        User.findAll({ where: { urlCode: urlCode }, raw: true })
+        const urlCode = req.params.urlcode;
+        CoreData.findAll({ where: { url_code: urlCode }, raw: true })
             .then(data => {
-                resolve(data[0]);
+                if(data.length === 1 ) {
+                    resolve(data[0]);
+                } else {
+                    reject(404);
+                }
             })
             .catch(err => reject(err));
     })
