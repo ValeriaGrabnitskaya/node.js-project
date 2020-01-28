@@ -8,29 +8,25 @@ const sequelize = new Sequelize("node_project", "root", "Hrab-123", {
   }
 });
 
-const PageContent = sequelize.define("page_content", {
+const Session = sequelize.define("sessions", {
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
     primaryKey: true,
     allowNull: false
   },
-  content_id: {
-    type: Sequelize.INTEGER,
-    allowNull: false
-  },
-  content_order: {
-    type: Sequelize.INTEGER,
-    allowNull: false
-  },
-  block_type: {
-    type: Sequelize.INTEGER,
-    allowNull: false
-  },
-  block_content: {
+  login: {
     type: Sequelize.STRING,
-    allowNull: true
+    allowNull: false
+  },
+  token: {
+    type: Sequelize.STRING,
+    allowNull: false
+  },
+  last_session_date: {
+    type: Sequelize.INTEGER,
+    allowNull: false
   }
 });
 
-module.exports = PageContent;
+module.exports = Session;

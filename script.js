@@ -1,14 +1,56 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const path = require('path');
 const hbs = require("hbs");
+const expressHbs = require("express-handlebars");
+
+var session = require('express-session')
+var MySQLStore = require('express-mysql-session')(session);
+
 
 const { addLog } = require('./logging/log');
-const { compose_maket_main_page } = require('./pages_compositors/pages_compositors.js');
+const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
+const { compose_maket_main_page, compose_maket_catalog } = require('./pages_compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
+const userController = require('./db/controllers/user-controller');
+const sessionController = require('./db/controllers/session-controller');
 
 const webserver = express();
 const port = 7480;
 const logFilePath = path.join(__dirname, '/logging/_server.log');
+
+webserver.use(bodyParser.json());
+
+webserver.use(session({
+    secret: 'ANY_SECRET_TEXT', // используется для подписи сессионного кука, может быть любым текстом
+    resave: false,
+    saveUninitialized: true
+}));
+
+// webserver.use(function (req, res, next) {
+
+//     // req.session - это данные сессии, т.е. данные ЭТОГО посетителя
+//     if (!req.session.views) {
+//         req.session.views = {}; 
+//         // здесь будем хранить информацию, какая страница сколько раз просмотрена ЭТИМ посетителем
+//         // ключ - УРЛ страницы, значение - количество просмотров этой страницы ЭТИМ посетителем
+//     }
+
+//     // счётчик просмотров этой страницы этим посетителем увеличиваем на 1
+//     req.session.views[req.originalUrl] = (req.session.views[req.originalUrl] || 0) + 1; 
+
+//     next();
+// });
+
+
+// устанавливаем настройки для файлов layout
+webserver.engine("hbs", expressHbs(
+    {
+        layoutsDir: "public/layouts",
+        defaultLayout: "base",
+        extname: "hbs"
+    }
+))
 
 webserver.set("view engine", "hbs");
 
@@ -21,40 +63,95 @@ webserver.use(
 );
 
 webserver.get('/', async (req, res, next) => {
-    addLog(logFilePath, "обращение к / - рендерим как /main");
+    addLog(logFilePath, "обращение к / - рендерим как /authorization");
     req.url = '/main-page';
     next();
 });
 
-webserver.get('/:urlcode', async (req, res) => {
-    res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
-    // let pageUrl = req.params.urlcode;
-    // addLog(logFilePath, 'страница, urlcode = ' + pageUrl);
+webserver.get('/authorization', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = authorization');
+    res.sendFile(path.resolve(__dirname, './public/authorization.html'));
+})
 
-    // try {
-    //     const coreDataInfo = await coreDataController.getCoreDataByUrlCode(req, res);
-    //     if (!coreDataInfo) {
-    //         addLog(logFilePath, "индивидуальная страница не найдена, urlcode =" + pageUrl);
-    //         res.status(404).send("Извините, такой страницы у нас нет!");
-    //     } else {
-    //         let mainPageData = await compose_maket_main_page(
-    //             { logFilePath },
-    //             {
-    //                 mainPageInfo: coreDataInfo
-    //             }
-    //         );
-    //         if (pageUrl === 'main-page') {
-    //             res.render("index.hbs", mainPageData);
-    //         } else {
-    //             // res.render("catalog.hbs", mainPageData);
-    //             res.sendFile('catalog.html');
-    //         }
-    //     }
+webserver.post('/check-authorization', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = check-authorization');
+    try {
+        const user = await userController.getUserByLoginPassword(req.body.login, getSoltedPassword(req.body.password));
+        if (!user) {
+            res.sendStatus(401);
+        } else {
+            let token = await generateToken();
+            if (token) {
+                const session = {
+                    login: user.login,
+                    token: token,
+                    last_session_date: getTodayTimestamp()
+                };
+                await sessionController.setSession(session);
+                res.send(JSON.stringify({ token: token }));
+            }
+        }
+    } catch (error) {
+        console.log(error);
+    }
 
-    // } catch (error) {
-    //     console.log(error);
-    // }
+})
+
+// webserver.use(function (req, res, next) {
+//     if (req.headers.token) {
+//         next();
+//     } else {
+//         res.redirect('/authorization');
+//     }
+// })
+
+webserver.get('/main-page', async (req, res) => {
+    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
+    addLog(logFilePath, 'страница, urlcode = main-page');
+    try {
+        const coreDataInfo = await coreDataController.getCoreDataByUrlCode('main-page', res);
+        if (!coreDataInfo) {
+            addLog(logFilePath, "индивидуальная страница не найдена, urlcode = main-page");
+            res.status(404).send("Извините, такой страницы у нас нет!");
+        } else {
+            let mainPageData = await compose_maket_main_page(
+                { logFilePath },
+                {
+                    mainPageInfo: coreDataInfo
+                }
+            );
+            res.render("main-page", mainPageData);
+        }
+    } catch (error) {
+        console.log(error);
+    }
 });
+
+webserver.get('/catalog', async (req, res) => {
+    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
+    addLog(logFilePath, 'страница, urlcode = catalog');
+
+    try {
+        const coreDataInfo = await coreDataController.getCoreDataByUrlCode('catalog', res);
+        if (!coreDataInfo) {
+            addLog(logFilePath, "индивидуальная страница не найдена, urlcode = catalog");
+            res.status(404).send("Извините, такой страницы у нас нет!");
+        } else {
+            let mainPageData = await compose_maket_catalog(
+                { logFilePath },
+                {
+                    mainPageInfo: coreDataInfo
+                }
+            );
+            res.render("catalog.hbs", mainPageData);
+        }
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+
 
 // // УРЛы вида /xxx
 // webserver.get('/:urlcode', async (req, res) => {

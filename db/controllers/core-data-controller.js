@@ -9,10 +9,9 @@ exports.getCoreData = function () {
     })
 };
 
-exports.getCoreDataByUrlCode = async function (req, res) {
+exports.getCoreDataByUrlCode = async function (url, res) {
     return new Promise((resolve, reject) => {
-        const urlCode = req.params.urlcode;
-        CoreData.findAll({ where: { url_code: urlCode }, raw: true })
+        CoreData.findAll({ where: { url_code: url }, raw: true })
             .then(data => {
                 if(data.length === 1 ) {
                     resolve(data[0]);

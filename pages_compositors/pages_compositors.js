@@ -15,8 +15,8 @@ async function compose_maket_main_page(coreData, appData) {
         for (var i = 0; i < headerData.length; i++) {
             var data = headerData[i];
             switch (data.block_type) {
-                case Blocks.Header:
-                    mainPageData.header = data.block_content;
+                case Blocks.Logo:
+                    mainPageData.logo = data.block_content;
                     break;
                 case Blocks.Image:
                     const imagesData = await imagesController.getImagesById(data.block_content);
@@ -25,13 +25,30 @@ async function compose_maket_main_page(coreData, appData) {
             }
         }
         return mainPageData;
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-        // {
-        //     metakeywords: "Мои контакты",
-        //     metadescription: "gavgav@mycorp.com",
-        //     title: "+1234567890",
-        //     image: "+1234567890"
-        // }
+async function compose_maket_catalog(coreData, appData) {
+    try {
+        const headerData = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
+
+        var mainPageData = {
+            metakeywords: appData.mainPageInfo.metakeywords,
+            metadescription: appData.mainPageInfo.metadescription,
+            title: appData.mainPageInfo.title
+        };
+
+        for (var i = 0; i < headerData.length; i++) {
+            var data = headerData[i];
+            switch (data.block_type) {
+                case Blocks.FormHeader:
+                    mainPageData.formHeader = data.block_content;
+                    break;
+            }
+        }
+        return mainPageData;
     } catch (error) {
         console.log(error)
     }
@@ -39,4 +56,5 @@ async function compose_maket_main_page(coreData, appData) {
 
 module.exports = {
     compose_maket_main_page,
+    compose_maket_catalog
 };

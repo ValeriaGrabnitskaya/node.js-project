@@ -1,4 +1,5 @@
 module.exports = {
-    Header: 1,
-    Image: 2
+    Logo: 1,
+    Image: 2,
+    FormHeader: 3
 }
