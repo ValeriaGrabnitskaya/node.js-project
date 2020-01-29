@@ -11,10 +11,11 @@ var MySQLStore = require('express-mysql-session')(session);
 
 const { addLog } = require('./logging/log');
 const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
-const { compose_maket_main_page, compose_maket_catalog } = require('./pages_compositors/pages_compositors.js');
+const { compose_maket_main_page, compose_maket_catalog, compose_maket_edit_catalog } = require('./pages_compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
 const userController = require('./db/controllers/user-controller');
 const sessionController = require('./db/controllers/session-controller');
+const pageContentController = require('./db/controllers/page_content_controller');
 
 const webserver = express();
 const port = 7480;
@@ -122,7 +123,6 @@ webserver.get('/main-page', async (req, res) => {
                 }
             );
             mainPageData.token = req.cookies.token;
-            console.log(mainPageData)
             res.render("main-page", mainPageData);
         }
     } catch (error) {
@@ -146,8 +146,52 @@ webserver.get('/catalog', async (req, res) => {
                     mainPageInfo: coreDataInfo
                 }
             );
+            mainPageData.token = req.cookies.token;
             res.render("catalog", mainPageData);
         }
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+webserver.get('/edit-pages', async (req, res) => {
+    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
+    addLog(logFilePath, 'страница, urlcode = edit-pages');
+
+    try {
+        const coreDataList = await coreDataController.getCoreData();
+        console.log(coreDataList)
+        let pageData = {
+            cafes: coreDataList,
+            token: req.cookies.token
+        };
+        res.render('edit-pages', pageData);
+
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+webserver.get('/get-edit-page-data/:contentId', async (req, res) => {
+    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
+    addLog(logFilePath, 'страница, urlcode = get-edit-page-data');
+
+    try {
+        console.log(req.query)
+        const content = await pageContentController.getPageContentByContentId(req.query.contentId);
+        console.log(content)
+        let page = await compose_maket_edit_catalog(
+            { logFilePath },
+            {
+                content: content
+            }
+        );
+        let pageData = {
+            cafes: coreDataList,
+            token: req.cookies.token
+        };
+        res.render('edit-pages', pageData);
 
     } catch (error) {
         console.log(error);

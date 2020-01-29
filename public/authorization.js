@@ -28,3 +28,7 @@ function getFormData(formName) {
     }
     return params;
 }
+
+async function logOut() {
+
+}
