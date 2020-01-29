@@ -1,4 +1,4 @@
-async function authorize() {
+async function logIn() {
     const fetchOptions = {
         method: "post",
         headers: {
@@ -10,8 +10,9 @@ async function authorize() {
     if (response.ok) {
         const data = await response.json();
         if (data.token) {
-            localStorage.setItem('token', data.token);
-            console.log(localStorage.getItem('token'))
+            document.cookie = `token=${data.token}`;
+            console.log(data)
+            window.location.href = "/main-page";
         }
     }
 }

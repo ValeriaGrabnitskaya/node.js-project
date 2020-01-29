@@ -30,7 +30,9 @@
                 </li>
             </ul>
         </div>
-        <a href="/authorization"><button type="button" class="btn btn-primary">Войти</button></a>
+        {{#if token}}
+        <button type="button" class="btn btn-primary" onclick="logOut()">Выйти</button>
+        {{/if}}
     </nav>
     {{{body}}}
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"

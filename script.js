@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const hbs = require("hbs");
 const expressHbs = require("express-handlebars");
+var cookieParser = require('cookie-parser');
 
 var session = require('express-session')
 var MySQLStore = require('express-mysql-session')(session);
@@ -20,6 +21,7 @@ const port = 7480;
 const logFilePath = path.join(__dirname, '/logging/_server.log');
 
 webserver.use(bodyParser.json());
+webserver.use(cookieParser());
 
 webserver.use(session({
     secret: 'ANY_SECRET_TEXT', // используется для подписи сессионного кука, может быть любым текстом
@@ -64,13 +66,13 @@ webserver.use(
 
 webserver.get('/', async (req, res, next) => {
     addLog(logFilePath, "обращение к / - рендерим как /authorization");
-    req.url = '/main-page';
+    req.url = '/authorization';
     next();
 });
 
 webserver.get('/authorization', async (req, res) => {
     addLog(logFilePath, 'страница, urlcode = authorization');
-    res.sendFile(path.resolve(__dirname, './public/authorization.html'));
+    res.sendFile(path.resolve(__dirname,'./public/authorization.html'));
 })
 
 webserver.post('/check-authorization', async (req, res) => {
@@ -94,16 +96,15 @@ webserver.post('/check-authorization', async (req, res) => {
     } catch (error) {
         console.log(error);
     }
-
 })
 
-// webserver.use(function (req, res, next) {
-//     if (req.headers.token) {
-//         next();
-//     } else {
-//         res.redirect('/authorization');
-//     }
-// })
+webserver.use(function (req, res, next) {
+    if (req.cookies.token) {
+        next();
+    } else {
+        res.redirect('/authorization');
+    }
+})
 
 webserver.get('/main-page', async (req, res) => {
     // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
@@ -120,6 +121,8 @@ webserver.get('/main-page', async (req, res) => {
                     mainPageInfo: coreDataInfo
                 }
             );
+            mainPageData.token = req.cookies.token;
+            console.log(mainPageData)
             res.render("main-page", mainPageData);
         }
     } catch (error) {
@@ -143,7 +146,7 @@ webserver.get('/catalog', async (req, res) => {
                     mainPageInfo: coreDataInfo
                 }
             );
-            res.render("catalog.hbs", mainPageData);
+            res.render("catalog", mainPageData);
         }
 
     } catch (error) {
