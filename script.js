@@ -4,18 +4,19 @@ const path = require('path');
 const hbs = require("hbs");
 const expressHbs = require("express-handlebars");
 var cookieParser = require('cookie-parser');
+const multer = require('multer');
 
 var session = require('express-session')
 var MySQLStore = require('express-mysql-session')(session);
 
-
 const { addLog } = require('./logging/log');
 const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
-const { compose_maket_main_page, compose_maket_catalog, compose_maket_edit_catalog } = require('./pages_compositors/pages_compositors.js');
+const { compose_maket_main_page, compose_maket_catalog, compose_edit_maket, compose_save_form, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
 const userController = require('./db/controllers/user-controller');
 const sessionController = require('./db/controllers/session-controller');
 const pageContentController = require('./db/controllers/page_content_controller');
+const imageController = require('./db/controllers/images-controller');
 
 const webserver = express();
 const port = 7480;
@@ -65,6 +66,17 @@ webserver.use(
     express.static(path.resolve(__dirname, "public"))
 );
 
+const storageConfig = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "public/img/big");
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+});
+
+webserver.use(multer({ storage: storageConfig }).single("photo"));
+
 webserver.get('/', async (req, res, next) => {
     addLog(logFilePath, "обращение к / - рендерим как /authorization");
     req.url = '/authorization';
@@ -73,7 +85,7 @@ webserver.get('/', async (req, res, next) => {
 
 webserver.get('/authorization', async (req, res) => {
     addLog(logFilePath, 'страница, urlcode = authorization');
-    res.sendFile(path.resolve(__dirname,'./public/authorization.html'));
+    res.sendFile(path.resolve(__dirname, './public/authorization.html'));
 })
 
 webserver.post('/check-authorization', async (req, res) => {
@@ -95,7 +107,7 @@ webserver.post('/check-authorization', async (req, res) => {
             }
         }
     } catch (error) {
-        console.log(error);
+        addLog(logFilePath, error);
     }
 })
 
@@ -108,7 +120,6 @@ webserver.use(function (req, res, next) {
 })
 
 webserver.get('/main-page', async (req, res) => {
-    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
     addLog(logFilePath, 'страница, urlcode = main-page');
     try {
         const coreDataInfo = await coreDataController.getCoreDataByUrlCode('main-page', res);
@@ -126,12 +137,11 @@ webserver.get('/main-page', async (req, res) => {
             res.render("main-page", mainPageData);
         }
     } catch (error) {
-        console.log(error);
+        addLog(logFilePath, error);
     }
 });
 
 webserver.get('/catalog', async (req, res) => {
-    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
     addLog(logFilePath, 'страница, urlcode = catalog');
 
     try {
@@ -151,17 +161,15 @@ webserver.get('/catalog', async (req, res) => {
         }
 
     } catch (error) {
-        console.log(error);
+        addLog(logFilePath, error);
     }
 });
 
 webserver.get('/edit-pages', async (req, res) => {
-    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
     addLog(logFilePath, 'страница, urlcode = edit-pages');
 
     try {
         const coreDataList = await coreDataController.getCoreData();
-        console.log(coreDataList)
         let pageData = {
             cafes: coreDataList,
             token: req.cookies.token
@@ -169,36 +177,38 @@ webserver.get('/edit-pages', async (req, res) => {
         res.render('edit-pages', pageData);
 
     } catch (error) {
-        console.log(error);
+        addLog(logFilePath, error);
     }
 });
 
 webserver.get('/get-edit-page-data/:contentId', async (req, res) => {
-    // res.sendFile(path.resolve(__dirname,'./public/catalog.html'));
     addLog(logFilePath, 'страница, urlcode = get-edit-page-data');
-
     try {
-        console.log(req.query)
-        const content = await pageContentController.getPageContentByContentId(req.query.contentId);
-        console.log(content)
-        let page = await compose_maket_edit_catalog(
+        const editBlock = await compose_edit_maket(
             { logFilePath },
-            {
-                content: content
-            }
-        );
-        let pageData = {
-            cafes: coreDataList,
-            token: req.cookies.token
-        };
-        res.render('edit-pages', pageData);
-
+            { content_id: req.params.contentId }
+        )
+        res.send(editBlock);
     } catch (error) {
-        console.log(error);
+        addLog(logFilePath, error);
     }
 });
 
+webserver.post('/save-main-page', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = save-main-page');
 
+    try {
+        if (req.body) {
+            await coreDataController.updateCoreDataByContentId(req.body.content_id, req.body);
+        }
+        if (req.file) {
+            await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
+        }
+        res.redirect('/edit-pages');
+    } catch (error) {
+        addLog(logFilePath, error);
+    }
+});
 
 // // УРЛы вида /xxx
 // webserver.get('/:urlcode', async (req, res) => {
