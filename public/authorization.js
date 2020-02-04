@@ -1,3 +1,5 @@
+let globalToken = null;
+
 async function logIn() {
     const fetchOptions = {
         method: "post",
@@ -11,7 +13,6 @@ async function logIn() {
         const data = await response.json();
         if (data.token) {
             document.cookie = `token=${data.token}`;
-            console.log(data)
             window.location.href = "/main-page";
         }
     }

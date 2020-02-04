@@ -5,9 +5,9 @@ const Blocks = require('../constants/blocks.js');
 const { addLog } = require('../logging/log.js');
 const { composeEditImage, composeEditCoreData } = require('../compositors/block_compositor.js');
 
-async function compose_maket_main_page(coreData, appData) {
+async function compose_maket(coreData, appData) {
     try {
-        const headerData = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
+        const contents = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
 
         var mainPageData = {
             metakeywords: appData.mainPageInfo.metakeywords,
@@ -15,12 +15,15 @@ async function compose_maket_main_page(coreData, appData) {
             title: appData.mainPageInfo.title
         };
 
-        for (var i = 0; i < headerData.length; i++) {
-            var data = headerData[i];
-            switch (data.block_type) {
+        for (var i = 0; i < contents.length; i++) {
+            var content = contents[i];
+            switch (content.block_type) {
                 case Blocks.Image:
-                    const imagesData = await imagesController.getImagesById(data.block_content);
+                    const imagesData = await imagesController.getImagesById(content.block_content);
                     mainPageData.imageUrl = imagesData ? '../img/big/' + imagesData.url : '';
+                    break;
+                case Blocks.FormattedText:
+                    mainPageData.tableName = content.block_content;
                     break;
             }
         }
@@ -110,7 +113,7 @@ async function compose_maket_edit_catalog(coreData, appData) {
 }
 
 module.exports = {
-    compose_maket_main_page,
+    compose_maket,
     compose_maket_catalog,
     compose_maket_edit_catalog,
     compose_edit_maket,

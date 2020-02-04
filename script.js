@@ -11,7 +11,7 @@ var MySQLStore = require('express-mysql-session')(session);
 
 const { addLog } = require('./logging/log');
 const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
-const { compose_maket_main_page, compose_maket_catalog, compose_edit_maket, compose_save_form, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
+const { compose_maket, compose_edit_maket, compose_save_form, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
 const userController = require('./db/controllers/user-controller');
 const sessionController = require('./db/controllers/session-controller');
@@ -119,52 +119,6 @@ webserver.use(function (req, res, next) {
     }
 })
 
-webserver.get('/main-page', async (req, res) => {
-    addLog(logFilePath, 'страница, urlcode = main-page');
-    try {
-        const coreDataInfo = await coreDataController.getCoreDataByUrlCode('main-page', res);
-        if (!coreDataInfo) {
-            addLog(logFilePath, "индивидуальная страница не найдена, urlcode = main-page");
-            res.status(404).send("Извините, такой страницы у нас нет!");
-        } else {
-            let mainPageData = await compose_maket_main_page(
-                { logFilePath },
-                {
-                    mainPageInfo: coreDataInfo
-                }
-            );
-            mainPageData.token = req.cookies.token;
-            res.render("main-page", mainPageData);
-        }
-    } catch (error) {
-        addLog(logFilePath, error);
-    }
-});
-
-webserver.get('/catalog', async (req, res) => {
-    addLog(logFilePath, 'страница, urlcode = catalog');
-
-    try {
-        const coreDataInfo = await coreDataController.getCoreDataByUrlCode('catalog', res);
-        if (!coreDataInfo) {
-            addLog(logFilePath, "индивидуальная страница не найдена, urlcode = catalog");
-            res.status(404).send("Извините, такой страницы у нас нет!");
-        } else {
-            let mainPageData = await compose_maket_catalog(
-                { logFilePath },
-                {
-                    mainPageInfo: coreDataInfo
-                }
-            );
-            mainPageData.token = req.cookies.token;
-            res.render("catalog", mainPageData);
-        }
-
-    } catch (error) {
-        addLog(logFilePath, error);
-    }
-});
-
 webserver.get('/edit-pages', async (req, res) => {
     addLog(logFilePath, 'страница, urlcode = edit-pages');
 
@@ -176,6 +130,53 @@ webserver.get('/edit-pages', async (req, res) => {
         };
         res.render('edit-pages', pageData);
 
+    } catch (error) {
+        addLog(logFilePath, error);
+    }
+});
+
+webserver.get('/cafe-:urlcode', async (req, res) => {
+    let pageUrlCode = req.params.urlcode;
+    console.log('pageUrlCode', pageUrlCode)
+    addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
+    try {
+        res.render("cafe", {token: req.cookies.token});
+        // const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
+        // if (!coreDataInfo) {
+        //     addLog(logFilePath, 'индивидуальная страница не найдена, urlcode = ', pageUrlCode);
+        //     res.status(404).send('Извините, такой страницы у нас нет!');
+        // } else {
+        //     let mainPageData = await compose_maket(
+        //         { logFilePath },
+        //         {
+        //             mainPageInfo: coreDataInfo
+        //         }
+        //     );
+        //     res.render(pageUrlCode, mainPageData);
+        // }
+    } catch (error) {
+        addLog(logFilePath, error);
+    }
+});
+
+webserver.get('/:urlcode', async (req, res) => {
+    let pageUrlCode = req.params.urlcode;
+    addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
+    try {
+        const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
+        if (!coreDataInfo) {
+            addLog(logFilePath, 'индивидуальная страница не найдена, urlcode = ', pageUrlCode);
+            res.status(404).send('Извините, такой страницы у нас нет!');
+        } else {
+            let mainPageData = await compose_maket(
+                { logFilePath },
+                {
+                    mainPageInfo: coreDataInfo
+                }
+            );
+            mainPageData.token = req.cookies.token;
+            res.render(pageUrlCode, mainPageData);
+        }
     } catch (error) {
         addLog(logFilePath, error);
     }

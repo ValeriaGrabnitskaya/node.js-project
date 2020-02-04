@@ -10,7 +10,7 @@ async function editPage(contentId) {
         const data = await response.text();
         console.log(data)
         document.getElementById('block').innerHTML = data;
-        // getHTMLRedactor();
+        getHTMLRedactor();
     }
 }
 
@@ -31,9 +31,11 @@ function previewFile() {
 }
 
 function getHTMLRedactor() {
-    ClassicEditor
-        .create(document.querySelector('#editor'))
-        .catch(error => {
-            console.error(error);
-        });
+    if (document.querySelector('#editor')) {
+        ClassicEditor
+            .create(document.querySelector('#editor'))
+            .catch(error => {
+                console.error(error);
+            });
+    }
 }
