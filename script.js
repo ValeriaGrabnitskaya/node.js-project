@@ -200,8 +200,8 @@ webserver.post('/save-page', async (req, res) => {
     addLog(logFilePath, 'страница, urlcode = save-page');
 
     try {
-        if (req.body.coreData) {
-            await coreDataController.updateCoreDataByContentId(req.body.coreData);
+        if (req.body) {
+            await coreDataController.updateCoreDataByContentId(req.body.coreData ? req.body.coreData : req.body);
         }
         if (req.body.coreData && req.body.pageData) {
             for (var key in req.body.pageData) {
@@ -211,9 +211,9 @@ webserver.post('/save-page', async (req, res) => {
                 await pageContentController.updatePageDataByContentIdAndId(req.body.coreData.content_id, key, pageItem);
             }
         }
-        // if (req.file) {
-        //     await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
-        // }
+        if (req.file) {
+            await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
+        }
         res.sendStatus(200);
     } catch (error) {
         addLog(logFilePath, error);
