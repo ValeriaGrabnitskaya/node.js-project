@@ -1,5 +1,6 @@
 module.exports = {
-    FormattedText: 1,
+    Header: 1,
     Image: 2,
-    FormHeader: 3
+    HtmlText: 7,
+    Text: 8
 }

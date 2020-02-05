@@ -2,8 +2,21 @@ const { getImages } = require('../shared/shared-image-building.js');
 const { addLog } = require('../logging/log.js');
 const coreDataController = require('../db/controllers/core-data-controller.js');
 
-async function composeFormattedText(content) {
-    return `<h3 class="mt-3">${content}</h3>`;
+async function composeHeader(header) {
+    return `<h3 class="mt-3">${header}</h3>`;
+}
+
+async function composeImage(image) {
+    const imageUrl = '../img/big/' + image.url;
+    return `<img src="${imageUrl}" class="img-fluid" alt="${image.code}">`;
+}
+
+async function composeHtmlText(htmlText) {
+    return htmlText;
+}
+
+async function composeText(text) {
+    return `<p class="mt-3">${text}</p>`;
 }
 
 async function composeEditImage(logFilePath, block_content) {
@@ -19,8 +32,30 @@ async function composeEditImage(logFilePath, block_content) {
             <img id="image" src="" height="200" alt="Image preview...">
          </div>
     </div>
-    <button type="submit">Сохранить</button>
     `;
+}
+
+async function composeEditHeader(content) {
+    return `
+    <div class="form-group">
+        <label>Заголовок текста</label>
+        <input class="form-control" type="text" name='name-${content.id}' value="${content.block_content}">
+    </div>`;
+}
+
+async function composeEditHtmlText(content) {
+    return `<div class="form-group">
+    <input class="form-control" type="text" name='html-${content.id}' value="" hidden>
+    <div id="editor">${content.block_content}</div>
+    </div>`;
+}
+
+async function composeEditText(content) {
+    return `
+    <div class="form-group">
+        <label>Адрес</label>
+        <input class="form-control" type="text" name='name-${content.id}' value="${content.block_content}">
+    </div>`;
 }
 
 async function composeEditCoreData(coreData, appData) {
@@ -37,7 +72,7 @@ async function composeEditCoreData(coreData, appData) {
             <input class="form-control" type="text" name='metadescription' value="${coreData.metadescription}">
         </div>
         <div class="form-group">
-            <label>Заголовок</label>
+            <label>Заголовок всей страницы (title)</label>
             <input class="form-control" type="text" name='title' value="${coreData.title}">
         </div>
         `
@@ -47,7 +82,13 @@ async function composeEditCoreData(coreData, appData) {
 }
 
 module.exports = {
-    composeFormattedText,
+    composeHeader,
+    composeImage,
+    composeHtmlText,
+    composeText,
     composeEditImage,
+    composeEditHeader,
+    composeEditHtmlText,
+    composeEditText,
     composeEditCoreData
 };

@@ -37,15 +37,10 @@ exports.getCoreDataByContentId = async function (content_id) {
     })
 };
 
-exports.updateCoreDataByContentId = async function (content_id, updateData) {
+exports.updateCoreDataByContentId = async function (coreData) {
     return new Promise((resolve, reject) => {
-        CoreData.update(
-            { 
-                metakeywords: updateData.metakeywords,  
-                metadescription: updateData.metadescription,  
-                title: updateData.title,  
-            }, { where: { content_id: content_id }, raw: true })
-            .then(data => {
+        CoreData.update(coreData, { where: { content_id: coreData.content_id }, raw: true })
+            .then(() => {
                resolve();
             })
             .catch(err => reject(err));

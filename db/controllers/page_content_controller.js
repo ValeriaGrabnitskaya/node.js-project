@@ -12,3 +12,13 @@ exports.getPageContentByContentId = async function (contentId) {
             });
     })
 };
+
+exports.updatePageDataByContentIdAndId = async function (content_id, id, updateData) {
+    return new Promise((resolve, reject) => {
+        PageContent.update(updateData, { where: { content_id: content_id, id: id }, raw: true })
+            .then(() => {
+               resolve();
+            })
+            .catch(err => reject(err));
+    })
+};

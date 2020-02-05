@@ -11,7 +11,7 @@ var MySQLStore = require('express-mysql-session')(session);
 
 const { addLog } = require('./logging/log');
 const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
-const { compose_maket, compose_edit_maket, compose_save_form, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
+const { compose_maket, compose_edit_maket, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
 const userController = require('./db/controllers/user-controller');
 const sessionController = require('./db/controllers/session-controller');
@@ -140,20 +140,20 @@ webserver.get('/cafe-:urlcode', async (req, res) => {
     console.log('pageUrlCode', pageUrlCode)
     addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
     try {
-        res.render("cafe", {token: req.cookies.token});
-        // const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
-        // if (!coreDataInfo) {
-        //     addLog(logFilePath, 'индивидуальная страница не найдена, urlcode = ', pageUrlCode);
-        //     res.status(404).send('Извините, такой страницы у нас нет!');
-        // } else {
-        //     let mainPageData = await compose_maket(
-        //         { logFilePath },
-        //         {
-        //             mainPageInfo: coreDataInfo
-        //         }
-        //     );
-        //     res.render(pageUrlCode, mainPageData);
-        // }
+        const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
+        if (!coreDataInfo) {
+            addLog(logFilePath, 'страница не найдена, urlcode = ', pageUrlCode);
+            res.status(404).send('Извините, такой страницы у нас нет!');
+        } else {
+            let pageData = await compose_maket(
+                { logFilePath },
+                {
+                    mainPageInfo: coreDataInfo
+                }
+            );
+            pageData.token = req.cookies.token;
+            res.render("cafe", pageData);
+        }
     } catch (error) {
         addLog(logFilePath, error);
     }
@@ -161,6 +161,7 @@ webserver.get('/cafe-:urlcode', async (req, res) => {
 
 webserver.get('/:urlcode', async (req, res) => {
     let pageUrlCode = req.params.urlcode;
+    console.log('urlcode ', pageUrlCode)
     addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
     try {
         const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
@@ -168,14 +169,14 @@ webserver.get('/:urlcode', async (req, res) => {
             addLog(logFilePath, 'индивидуальная страница не найдена, urlcode = ', pageUrlCode);
             res.status(404).send('Извините, такой страницы у нас нет!');
         } else {
-            let mainPageData = await compose_maket(
+            let pageData = await compose_maket(
                 { logFilePath },
                 {
                     mainPageInfo: coreDataInfo
                 }
             );
-            mainPageData.token = req.cookies.token;
-            res.render(pageUrlCode, mainPageData);
+            pageData.token = req.cookies.token;
+            res.render(pageUrlCode, pageData);
         }
     } catch (error) {
         addLog(logFilePath, error);
@@ -195,17 +196,25 @@ webserver.get('/get-edit-page-data/:contentId', async (req, res) => {
     }
 });
 
-webserver.post('/save-main-page', async (req, res) => {
-    addLog(logFilePath, 'страница, urlcode = save-main-page');
+webserver.post('/save-page', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = save-page');
 
     try {
-        if (req.body) {
-            await coreDataController.updateCoreDataByContentId(req.body.content_id, req.body);
+        if (req.body.coreData) {
+            await coreDataController.updateCoreDataByContentId(req.body.coreData);
         }
-        if (req.file) {
-            await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
+        if (req.body.coreData && req.body.pageData) {
+            for (var key in req.body.pageData) {
+                const pageItem = {
+                    block_content: req.body.pageData[key]
+                }
+                await pageContentController.updatePageDataByContentIdAndId(req.body.coreData.content_id, key, pageItem);
+            }
         }
-        res.redirect('/edit-pages');
+        // if (req.file) {
+        //     await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
+        // }
+        res.sendStatus(200);
     } catch (error) {
         addLog(logFilePath, error);
     }

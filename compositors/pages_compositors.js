@@ -3,54 +3,36 @@ const imagesController = require('../db/controllers/images-controller.js');
 const blockCompositor = require('./block_compositor.js');
 const Blocks = require('../constants/blocks.js');
 const { addLog } = require('../logging/log.js');
-const { composeEditImage, composeEditCoreData } = require('../compositors/block_compositor.js');
 
 async function compose_maket(coreData, appData) {
     try {
         const contents = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
 
-        var mainPageData = {
-            metakeywords: appData.mainPageInfo.metakeywords,
-            metadescription: appData.mainPageInfo.metadescription,
-            title: appData.mainPageInfo.title
-        };
-
+        var page = '';
         for (var i = 0; i < contents.length; i++) {
             var content = contents[i];
             switch (content.block_type) {
                 case Blocks.Image:
                     const imagesData = await imagesController.getImagesById(content.block_content);
-                    mainPageData.imageUrl = imagesData ? '../img/big/' + imagesData.url : '';
+                    page += await blockCompositor.composeImage(imagesData);
                     break;
-                case Blocks.FormattedText:
-                    mainPageData.tableName = content.block_content;
+                case Blocks.Header:
+                    page += await blockCompositor.composeHeader(content.block_content);
+                    break;
+                case Blocks.HtmlText:
+                    page += await blockCompositor.composeHtmlText(content.block_content);
+                    break;
+                case Blocks.Text:
+                    page += await blockCompositor.composeText(content.block_content);
                     break;
             }
         }
-        return mainPageData;
-    } catch (error) {
-        addLog(coreData.logFilePath, error);
-    }
-}
-
-async function compose_maket_catalog(coreData, appData) {
-    try {
-        const headerData = await pageContentController.getPageContentByContentId(appData.mainPageInfo.content_id);
-
         var mainPageData = {
             metakeywords: appData.mainPageInfo.metakeywords,
             metadescription: appData.mainPageInfo.metadescription,
-            title: appData.mainPageInfo.title
+            title: appData.mainPageInfo.title,
+            page: page
         };
-
-        for (var i = 0; i < headerData.length; i++) {
-            var data = headerData[i];
-            switch (data.block_type) {
-                case Blocks.FormattedText:
-                    mainPageData.tableName = data.block_content;
-                    break;
-            }
-        }
         return mainPageData;
     } catch (error) {
         addLog(coreData.logFilePath, error);
@@ -60,62 +42,59 @@ async function compose_maket_catalog(coreData, appData) {
 async function compose_edit_maket(coreData, appData) {
     try {
         const contents = await pageContentController.getPageContentByContentId(appData.content_id);
-        var page = "<form action='/save-main-page' method=post enctype='multipart/form-data' id='form1'>";
+        // var page = "<form action='/save-page' method=post enctype='multipart/form-data' id='saveForm'>";
+        var page = "<form id='saveForm'>";
+        page += await blockCompositor.composeEditCoreData(coreData, appData);
         for (var i = 0; i < contents.length; i++) {
             var content = contents[i];
-            page += await composeEditCoreData(coreData, appData);
             switch (content.block_type) {
                 case Blocks.Image:
-                    page += await composeEditImage(coreData.logFilePath, content.block_content);
+                    page += await blockCompositor.composeEditImage(coreData.logFilePath, content.block_content);
+                    break;
+                case Blocks.Header:
+                    page += await blockCompositor.composeEditHeader(content);
+                    break;
+                case Blocks.HtmlText:
+                    page += await blockCompositor.composeEditHtmlText(content);
+                    break;
+                case Blocks.Text:
+                    page += await blockCompositor.composeEditText(content);
                     break;
             }
         }
-        page += '</form>';
+        page += `
+            <button type="button" onclick="savePage()">Сохранить</button>
+        </form>
+        `;
         return page;
     } catch (error) {
         addLog(coreData.logFilePath, error);
     }
 }
 
-async function compose_save_form(coreData, appData) {
-    try {
-        return `
-        <div class="mt-4">
-        <button type="button" class="btn btn-primary" onclick="resetMaket()">Отменить</button>
-        <button type="button" class="btn btn-primary" onclick="saveMaket(${appData.coreDataList.content_id})">Сохранить</button>
-        </div>
-        `;
-    } catch (error) {
-        addLog(coreData.logFilePath, error);
-    }
-}
+// async function compose_maket_edit_catalog(coreData, appData) {
+//     try {
+//         const contents = await pageContentController.getPageContentByContentId(appData.coreDataList.content_id);
 
-async function compose_maket_edit_catalog(coreData, appData) {
-    try {
-        const contents = await pageContentController.getPageContentByContentId(appData.coreDataList.content_id);
+//         for (var i = 0; i < contents.length; i++) {
+//             var content = contents[i];
 
-        for (var i = 0; i < contents.length; i++) {
-            var content = contents[i];
+//             var blockHTML = '<div id="editor">';
 
-            var blockHTML = '<div id="editor">';
-
-            switch (content.block_type) {
-                case Blocks.FormattedText:
-                    blockHTML += await blockCompositor.composeFormattedText(content.block_content);
-                    break;
-            }
-            blockHTML += '</div>';
-        }
-        return blockHTML;
-    } catch (error) {
-        console.log(error)
-    }
-}
+//             switch (content.block_type) {
+//                 case Blocks.Header:
+//                     blockHTML += await blockCompositor.composeFormattedText(content.block_content);
+//                     break;
+//             }
+//             blockHTML += '</div>';
+//         }
+//         return blockHTML;
+//     } catch (error) {
+//         console.log(error)
+//     }
+// }
 
 module.exports = {
     compose_maket,
-    compose_maket_catalog,
-    compose_maket_edit_catalog,
-    compose_edit_maket,
-    compose_save_form
+    compose_edit_maket
 };
