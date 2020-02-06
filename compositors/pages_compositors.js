@@ -62,6 +62,9 @@ async function compose_edit_maket(coreData, appData) {
                 case Blocks.Text:
                     page += await blockCompositor.composeEditText(content);
                     break;
+                case Blocks.Table:
+                    page += await blockCompositor.composeEditTableColumn(content);
+                    break;
             }
         }
         page += `

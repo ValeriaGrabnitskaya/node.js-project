@@ -10,7 +10,12 @@ async function mapSaveEditPage(requestBody) {
         } else if (/html-\d/.test(key)) {
             var id = key.split('-')[1];
             updateBody.pageData[id] = requestBody[key];
-        } else {
+        } else if (/selection-\d/.test(key)) {
+            var id = key.split('-')[1];
+            updateBody.pageData[id] = '';
+            updateBody.pageData[id] += requestBody[key];
+        }
+        else {
             updateBody.coreData[key] = requestBody[key];
         }
     }

@@ -26,12 +26,15 @@ async function composeTable(tableColumnArray) {
     const cafeBlockIds = cafeBlockNames.map((obj) => obj.id);
 
     var columnsObject = [];
+    var columnIds = [];
 
-    tableColumnArray.split(';').map((column) => {
+    tableColumnArray.split(',').map((column) => {
         if (cafeBlockIds.indexOf(+column) != -1) {
             columnsObject.push(cafeBlockNames[cafeBlockIds.indexOf(+column)]);
+            columnIds.push(cafeBlockNames[cafeBlockIds.indexOf(+column)].id)
         }
     });
+    console.log(columnsObject);
 
     var tableColumnts = '';
 
@@ -79,11 +82,11 @@ async function composeTable(tableColumnArray) {
 
     finalPageContent.forEach((content) => {
         tableRows += '<tr>';
-        cafeBlockIds.forEach((blockId, index) => {
-            if(index === 0) {
-                tableRows += `<td><a href="/cafe-${content.url_code}">${content[blockId]}</a></td>`;
+        columnIds.forEach((columnId, index) => {
+            if (index === 0) {
+                tableRows += `<td><a href="/cafe-${content.url_code}">${content[columnId]}</a></td>`;
             } else {
-                tableRows += `<td>${content[blockId]}</td>`;
+                tableRows += `<td>${content[columnId]}</td>`;
             }
         })
         tableRows += '</tr>';
@@ -138,6 +141,40 @@ async function composeEditText(content) {
     </div>`;
 }
 
+async function composeEditTableColumn(content) {
+    const cafeBlockNames = await cafeBlockNameController.getCafeBlockNames();
+
+    var select = '';
+
+    content.block_content.split(',').forEach((columnId) => {
+        var options = '';
+        cafeBlockNames.forEach((block) => {
+            if (block.id === +columnId) {
+                options += `<option selected value="${block.id}">${block.name}</option>`
+            } else {
+                options += `<option value="${block.id}">${block.name}</option>`
+            }
+        })
+        select += `
+        <div class="col-sm">
+            <select class="form-control" name="selection-${content.id}" id="exampleFormControlSelect1">
+                ${options}
+            </select>
+        </div>
+        `
+    })
+
+
+    return `
+    <div class="form-group">
+    <labeL>Колонки таблицы</label>
+        <div class="row">
+            ${select}
+        </div>
+    </div>
+    `;
+}
+
 async function composeEditCoreData(coreData, appData) {
     try {
         const coreData = await coreDataController.getCoreDataByContentId(appData.content_id);
@@ -171,5 +208,6 @@ module.exports = {
     composeEditHeader,
     composeEditHtmlText,
     composeEditText,
+    composeEditTableColumn,
     composeEditCoreData
 };
