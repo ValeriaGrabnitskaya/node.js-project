@@ -30,6 +30,10 @@ const PageContent = sequelize.define("page_content", {
   block_content: {
     type: Sequelize.STRING,
     allowNull: true
+  },
+  cafe_block_id: {
+    type: Sequelize.INTEGER,
+    allowNull: true
   }
 });
 

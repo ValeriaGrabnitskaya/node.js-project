@@ -1,4 +1,5 @@
 const PageContent = require("../models/page_content.js");
+const { Op } = require("sequelize");
 
 exports.getPageContentByContentId = async function (contentId) {
     return new Promise((resolve, reject) => {
@@ -7,7 +8,6 @@ exports.getPageContentByContentId = async function (contentId) {
                 resolve(data);
             })
             .catch(err => {
-                console.log(err)
                 reject(err)
             });
     })
@@ -17,8 +17,32 @@ exports.updatePageDataByContentIdAndId = async function (content_id, id, updateD
     return new Promise((resolve, reject) => {
         PageContent.update(updateData, { where: { content_id: content_id, id: id }, raw: true })
             .then(() => {
-               resolve();
+                resolve();
             })
             .catch(err => reject(err));
+    })
+};
+
+exports.getCafePageContent = async function (cafeBlockIds) {
+    return new Promise((resolve, reject) => {
+        PageContent.findAll(
+            {
+                where: {
+                    cafe_block_id: {
+                        [Op.or]: cafeBlockIds
+                    }
+                },
+                order: [
+                    ['content_id', 'ASC']
+                ],
+                attributes: ['content_id', 'block_content', 'cafe_block_id'],
+                raw: true
+            })
+            .then(data => {
+                resolve(data);
+            })
+            .catch(err => {
+                reject(err)
+            });
     })
 };
