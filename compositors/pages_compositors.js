@@ -42,8 +42,7 @@ async function compose_maket(coreData, appData) {
 async function compose_edit_maket(coreData, appData) {
     try {
         const contents = await pageContentController.getPageContentByContentId(appData.content_id);
-        // var page = "<form action='/save-page' method=post enctype='multipart/form-data' id='saveForm'>";
-        var page = "<form id='saveForm'>";
+        var page = '<form id="saveForm" action="/save-page" method="POST" enctype="multipart/form-data">';
         page += await blockCompositor.composeEditCoreData(coreData, appData);
         for (var i = 0; i < contents.length; i++) {
             var content = contents[i];
@@ -63,7 +62,7 @@ async function compose_edit_maket(coreData, appData) {
             }
         }
         page += `
-            <button type="button" onclick="savePage()">Сохранить</button>
+            <button id="submit" type="submit">Сохранить</button>
         </form>
         `;
         return page;
@@ -71,6 +70,7 @@ async function compose_edit_maket(coreData, appData) {
         addLog(coreData.logFilePath, error);
     }
 }
+
 
 // async function compose_maket_edit_catalog(coreData, appData) {
 //     try {

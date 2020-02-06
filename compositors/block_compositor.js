@@ -27,10 +27,10 @@ async function composeEditImage(logFilePath, block_content) {
         <p>Текущая картинка</p>
         <img src="../img/small/${image}" alt="Current image" class="mb-3">
         <input type="text" name='imageId' value="${block_content}" hidden><br>
-        <input type="file" name='photo' onchange="previewFile()"><br>
+        <input type="file" name='image' onchange="previewFile()"><br>
         <div class="mt-3 mb-3">
             <img id="image" src="" height="200" alt="Image preview...">
-         </div>
+        </div>
     </div>
     `;
 }
@@ -45,7 +45,7 @@ async function composeEditHeader(content) {
 
 async function composeEditHtmlText(content) {
     return `<div class="form-group">
-    <input class="form-control" type="text" name='html-${content.id}' value="" hidden>
+    <input class="form-control" type="text" id="html" name='html-${content.id}' value="" hidden>
     <div id="editor">${content.block_content}</div>
     </div>`;
 }
