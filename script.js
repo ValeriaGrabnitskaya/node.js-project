@@ -13,11 +13,14 @@ const { addLog } = require('./logging/log');
 const { getSoltedPassword, generateToken, getTodayTimestamp } = require('./shared/shared-authorization');
 const { compose_maket, compose_edit_maket, compose_maket_edit_catalog } = require('./compositors/pages_compositors.js');
 const coreDataController = require('./db/controllers/core-data-controller.js');
+const coreCafeController = require('./db/controllers/core-cafe-controller');
 const userController = require('./db/controllers/user-controller');
 const sessionController = require('./db/controllers/session-controller');
 const pageContentController = require('./db/controllers/page_content_controller');
 const imageController = require('./db/controllers/images-controller');
 const sharedMapForm = require('./shared/shared_map_form');
+const sharedCoreData = require('./shared/shared_core_data');
+const indexing = require('./indexing/indexing');
 
 const webserver = express();
 const port = 7480;
@@ -125,8 +128,9 @@ webserver.get('/edit-pages', async (req, res) => {
 
     try {
         const coreDataList = await coreDataController.getCoreData();
+        const coreCafeDataList = await coreCafeController.getCoreCafeData();
         let pageData = {
-            cafes: coreDataList,
+            cafes: [...coreDataList, ...coreCafeDataList],
             token: req.cookies.token
         };
         res.render('edit-pages', pageData);
@@ -138,10 +142,9 @@ webserver.get('/edit-pages', async (req, res) => {
 
 webserver.get('/cafe-:urlcode', async (req, res) => {
     let pageUrlCode = req.params.urlcode;
-    console.log('pageUrlCode', pageUrlCode)
     addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
     try {
-        const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
+        const coreDataInfo = await coreCafeController.getCoreCafeDataByUrlCode(pageUrlCode, res);
         if (!coreDataInfo) {
             addLog(logFilePath, 'страница не найдена, urlcode = ', pageUrlCode);
             res.status(404).send('Извините, такой страницы у нас нет!');
@@ -162,7 +165,6 @@ webserver.get('/cafe-:urlcode', async (req, res) => {
 
 webserver.get('/:urlcode', async (req, res) => {
     let pageUrlCode = req.params.urlcode;
-    console.log('urlcode ', pageUrlCode)
     addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
     try {
         const coreDataInfo = await coreDataController.getCoreDataByUrlCode(pageUrlCode, res);
@@ -202,7 +204,7 @@ webserver.post('/save-page', async (req, res) => {
     try {
         const mapData = await sharedMapForm.mapSaveEditPage(req.body);
         if (mapData.coreData) {
-            await coreDataController.updateCoreDataByContentId(mapData.coreData);
+            await sharedCoreData.updateCoreDataByContentId(mapData.coreData)
         }
         if (mapData.coreData && mapData.pageData) {
             for (var key in mapData.pageData) {
@@ -215,6 +217,7 @@ webserver.post('/save-page', async (req, res) => {
         if (req.file) {
             await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
         }
+        await indexing.indexingPages(req.cookies.token);
         res.redirect('/edit-pages');
     } catch (error) {
         addLog(logFilePath, error);

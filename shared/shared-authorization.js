@@ -1,9 +1,9 @@
 const { sha256 } = require("js-sha256");
-const PasswordConfig = require('../configures/password-config');
+const sharedConfig = require('../configures/shared_config');
 const crypto = require('crypto');
 
 exports.getSoltedPassword = function (password) {
-  return sha256(password) + PasswordConfig.PASSWORD_END;
+  return sha256(password) + sharedConfig.PASSWORD_END;
 }
 
 exports.generateToken = function ({ stringBase = 'base64', byteLength = 20 } = {}) {

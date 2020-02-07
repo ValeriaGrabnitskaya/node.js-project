@@ -1,8 +1,8 @@
-const CoreData = require("../models/core-data.js");
+const CoreCafeData = require("../models/core-cafe-data");
 
-exports.getCoreData = function () {
+exports.getCoreCafeData = function () {
     return new Promise((resolve, reject) => {
-        CoreData.findAll({ raw: true }).then(data => {
+        CoreCafeData.findAll({ raw: true }).then(data => {
             resolve(data);
         }).catch(err => reject(err));
     })
@@ -10,17 +10,17 @@ exports.getCoreData = function () {
 
 exports.getUrlCodes = function () {
     return new Promise((resolve, reject) => {
-        CoreData.findAll({
-            attributes: ['url_code']
+        CoreCafeData.findAll({
+            attributes: ['url_code'],
         }, { raw: true }).then(data => {
             resolve(data);
         }).catch(err => reject(err));
     })
 };
 
-exports.getCoreDataByUrlCode = async function (url) {
+exports.getCoreCafeDataByUrlCode = async function (url) {
     return new Promise((resolve, reject) => {
-        CoreData.findAll({ where: { url_code: url }, raw: true })
+        CoreCafeData.findAll({ where: { url_code: url }, raw: true })
             .then(data => {
                 if (data.length === 1) {
                     resolve(data[0]);
@@ -32,9 +32,9 @@ exports.getCoreDataByUrlCode = async function (url) {
     })
 };
 
-exports.getCoreDataByContentId = async function (content_id) {
+exports.getCoreCafeDataByContentId = async function (content_id) {
     return new Promise((resolve, reject) => {
-        CoreData.findOne({ where: { content_id: content_id }, raw: true })
+        CoreCafeData.findOne({ where: { content_id: content_id }, raw: true })
             .then(data => {
                 resolve(data);
             })
@@ -42,13 +42,14 @@ exports.getCoreDataByContentId = async function (content_id) {
     })
 };
 
-exports.updateCoreDataByContentId = async function (coreData) {
+exports.updateCoreCafeDataByContentId = async function (coreData) {
     return new Promise((resolve, reject) => {
-        CoreData.update({
-            title: coreData.title,
-            metakeywords: coreData.metakeywords,
-            metadescription: coreData.metadescription,
-        }, { where: { content_id: coreData.content_id }, raw: true })
+        CoreCafeData.update(
+            {
+                title: coreData.title,
+                metakeywords: coreData.metakeywords,
+                metadescription: coreData.metadescription,
+            }, { where: { content_id: coreData.content_id }, raw: true })
             .then(() => {
                 resolve();
             })

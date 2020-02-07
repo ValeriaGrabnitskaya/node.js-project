@@ -26,7 +26,7 @@ async function compose_maket(coreData, appData) {
                     page += await blockCompositor.composeText(content.block_content);
                     break;
                 case Blocks.Table:
-                    page += await blockCompositor.composeTable(content.block_content);
+                    page += await blockCompositor.composeTable(appData.mainPageInfo ,content.block_content);
                     break;
             }
         }
@@ -76,29 +76,6 @@ async function compose_edit_maket(coreData, appData) {
         addLog(coreData.logFilePath, error);
     }
 }
-
-
-// async function compose_maket_edit_catalog(coreData, appData) {
-//     try {
-//         const contents = await pageContentController.getPageContentByContentId(appData.coreDataList.content_id);
-
-//         for (var i = 0; i < contents.length; i++) {
-//             var content = contents[i];
-
-//             var blockHTML = '<div id="editor">';
-
-//             switch (content.block_type) {
-//                 case Blocks.Header:
-//                     blockHTML += await blockCompositor.composeFormattedText(content.block_content);
-//                     break;
-//             }
-//             blockHTML += '</div>';
-//         }
-//         return blockHTML;
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
 
 module.exports = {
     compose_maket,

@@ -1,8 +1,10 @@
 const { getImages } = require('../shared/shared-image-building.js');
 const { addLog } = require('../logging/log.js');
 const coreDataController = require('../db/controllers/core-data-controller.js');
+const coreCafeController = require('../db/controllers/core-cafe-controller');
 const cafeBlockNameController = require('../db/controllers/cafe-block-name-controller');
 const pageContentController = require('../db/controllers/page_content_controller');
+const sharedCoreData = require('../shared/shared_core_data');
 
 async function composeHeader(header) {
     return `<h3 class="mt-3">${header}</h3>`;
@@ -21,7 +23,7 @@ async function composeText(text) {
     return `<p class="mt-3">${text}</p>`;
 }
 
-async function composeTable(tableColumnArray) {
+async function composeTable(coreData, tableColumnArray) {
     const cafeBlockNames = await cafeBlockNameController.getCafeBlockNames();
     const cafeBlockIds = cafeBlockNames.map((obj) => obj.id);
 
@@ -34,7 +36,6 @@ async function composeTable(tableColumnArray) {
             columnIds.push(cafeBlockNames[cafeBlockIds.indexOf(+column)].id)
         }
     });
-    console.log(columnsObject);
 
     var tableColumnts = '';
 
@@ -73,7 +74,6 @@ async function composeTable(tableColumnArray) {
 
     for (var i = 0; i < mapPageContent.length; i++) {
         var pageContent = mapPageContent[i];
-        const coreData = await coreDataController.getCoreDataByContentId(mapPageContent[i].content_id);
         pageContent.url_code = coreData.url_code;
         finalPageContent.push(pageContent);
     }
@@ -177,9 +177,10 @@ async function composeEditTableColumn(content) {
 
 async function composeEditCoreData(coreData, appData) {
     try {
-        const coreData = await coreDataController.getCoreDataByContentId(appData.content_id);
+        var coreData = await sharedCoreData.getCoreData(appData.content_id);
         return `
         <input type="text" name='content_id' value="${coreData.content_id}" hidden><br>
+        <input type="text" name='is_cafe' value="${coreData.isCafe}" hidden><br>
         <div class="form-group">
             <label>Ключевые слова для поисковиков (meta keywords)</label>
             <input class="form-control" type="text" name='metakeywords' value="${coreData.metakeywords}">
