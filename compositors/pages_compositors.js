@@ -26,7 +26,7 @@ async function compose_maket(coreData, appData) {
                     page += await blockCompositor.composeText(content.block_content);
                     break;
                 case Blocks.Table:
-                    page += await blockCompositor.composeTable(appData.mainPageInfo ,content.block_content);
+                    page += await blockCompositor.composeTable(content.block_content);
                     break;
             }
         }

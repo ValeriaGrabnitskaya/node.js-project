@@ -5,7 +5,8 @@ const sequelize = new Sequelize("node_project", "root", "L730Mool", {
   define: {
     timestamps: false,
     freezeTableName: true
-  }
+  },
+  logging: false
 });
 
 const IndexUrlsWords = sequelize.define("index_urls_words", {

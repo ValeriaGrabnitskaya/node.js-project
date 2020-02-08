@@ -24,7 +24,7 @@ const indexing = require('./indexing/indexing');
 const searchPages = require('./searching/search_pages.js');
 
 const webserver = express();
-const port = 7480;
+const port = 7481;
 const logFilePath = path.join(__dirname, '/logging/_server.log');
 
 webserver.use(bodyParser.json());
@@ -35,22 +35,6 @@ webserver.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
-// webserver.use(function (req, res, next) {
-
-//     // req.session - это данные сессии, т.е. данные ЭТОГО посетителя
-//     if (!req.session.views) {
-//         req.session.views = {}; 
-//         // здесь будем хранить информацию, какая страница сколько раз просмотрена ЭТИМ посетителем
-//         // ключ - УРЛ страницы, значение - количество просмотров этой страницы ЭТИМ посетителем
-//     }
-
-//     // счётчик просмотров этой страницы этим посетителем увеличиваем на 1
-//     req.session.views[req.originalUrl] = (req.session.views[req.originalUrl] || 0) + 1; 
-
-//     next();
-// });
-
 
 // устанавливаем настройки для файлов layout
 webserver.engine("hbs", expressHbs(
@@ -67,9 +51,9 @@ webserver.set('views', path.join(__dirname, 'public'));
 
 hbs.registerPartials(__dirname + "/public/components");
 
-webserver.use(
-    express.static(path.resolve(__dirname, "public"))
-);
+// webserver.use(
+//     express.static(path.resolve(__dirname, "public"))
+// );
 
 const storageConfig = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -113,6 +97,7 @@ webserver.post('/check-authorization', async (req, res) => {
         }
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 })
 
@@ -138,6 +123,7 @@ webserver.get('/edit-pages', async (req, res) => {
 
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -145,16 +131,11 @@ webserver.get('/internal-searching', async (req, res) => {
     addLog(logFilePath, 'страница, urlcode = internal-searching');
 
     try {
-        // const coreDataList = await coreDataController.getCoreData();
-        // const coreCafeDataList = await coreCafeController.getCoreCafeData();
-        // let pageData = {
-        //     cafes: [...coreDataList, ...coreCafeDataList],
-        //     token: req.cookies.token
-        // };
         res.render('internal-searching');
 
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -178,6 +159,7 @@ webserver.get('/cafe-:urlcode', async (req, res) => {
         }
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -201,6 +183,7 @@ webserver.get('/:urlcode', async (req, res) => {
         }
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -214,6 +197,7 @@ webserver.get('/get-edit-page-data/:contentId', async (req, res) => {
         res.send(editBlock);
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -239,6 +223,7 @@ webserver.post('/save-page', async (req, res) => {
         res.redirect('/edit-pages');
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -252,6 +237,7 @@ webserver.post('/save-image', async (req, res) => {
         res.sendStatus(200);
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 
@@ -265,6 +251,7 @@ webserver.post('/search', async (req, res) => {
 
     } catch (error) {
         addLog(logFilePath, error);
+        res.sendStatus(500);
     }
 });
 

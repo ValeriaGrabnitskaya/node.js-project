@@ -23,7 +23,7 @@ async function composeText(text) {
     return `<p class="mt-3">${text}</p>`;
 }
 
-async function composeTable(coreData, tableColumnArray) {
+async function composeTable(tableColumnArray) {
     const cafeBlockNames = await cafeBlockNameController.getCafeBlockNames();
     const cafeBlockIds = cafeBlockNames.map((obj) => obj.id);
 
@@ -44,6 +44,11 @@ async function composeTable(coreData, tableColumnArray) {
     });
 
     const pageContents = await pageContentController.getCafePageContent(cafeBlockIds);
+
+    var pageCoreData = null;
+    if(pageContents.length) {
+        pageCoreData = await coreCafeController.getCoreCafeDataByContentId(pageContents[0].content_id);
+    }
 
     var mapPageContent = [];
     var object = {};
@@ -74,7 +79,7 @@ async function composeTable(coreData, tableColumnArray) {
 
     for (var i = 0; i < mapPageContent.length; i++) {
         var pageContent = mapPageContent[i];
-        pageContent.url_code = coreData.url_code;
+        pageContent.url_code = pageCoreData.url_code;
         finalPageContent.push(pageContent);
     }
 
@@ -179,8 +184,8 @@ async function composeEditCoreData(coreData, appData) {
     try {
         var coreData = await sharedCoreData.getCoreData(appData.content_id);
         return `
-        <input type="text" name='content_id' value="${coreData.content_id}" hidden><br>
-        <input type="text" name='is_cafe' value="${coreData.isCafe}" hidden><br>
+        <input type="text" name='content_id' value="${coreData.content_id}" hidden>
+        <input type="text" name='is_cafe' value="${coreData.isCafe}" hidden>
         <div class="form-group">
             <label>Ключевые слова для поисковиков (meta keywords)</label>
             <input class="form-control" type="text" name='metakeywords' value="${coreData.metakeywords}">
