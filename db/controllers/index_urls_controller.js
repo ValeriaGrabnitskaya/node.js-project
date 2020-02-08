@@ -38,9 +38,6 @@ exports.getHtmlCrcByUrl = async function (url) {
     })
 };
 
-// url,         title, group_code,        group_params,                        html_crc,  add_dt,  actual_flag,   last_render_dt,   last_modification_dt
-// urlInfo.url, title, urlInfo.groupCode, JSON.stringify(urlInfo.groupParams), htmlCRC    now            1         now               now
-
 exports.addIndexData = async function (indexData) {
     return new Promise((resolve, reject) => {
         IndexUrls.create({
@@ -93,5 +90,19 @@ exports.updateReindexingPage = async function (updateData) {
             .catch(err => {
                 reject(err)
             });
+    })
+};
+
+exports.getIndexDataByIds = async function (idsArray) {
+    return new Promise((resolve, reject) => {
+        IndexUrls.findAll({
+            where: { id: idsArray },
+            attributes: ['id', 'url', 'title'],
+            raw: true
+        })
+            .then(data => {
+                resolve(data);
+            })
+            .catch(err => reject(err));
     })
 };

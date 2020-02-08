@@ -22,17 +22,20 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto ml-auto">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="/main-page">Главная <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/catalog">Список заведений</a>
                 </li>
-                {{#if token}}
+                {{!-- {{#if token}} --}}
                 <li class="nav-item">
                     <a class="nav-link" href="/edit-pages">Редактировать страницы</a>
                 </li>
-                {{/if}}
+                {{!-- {{/if}} --}}
+                <li class="nav-item">
+                    <a class="nav-link" href="/internal-searching">Внутренний поиск</a>
+                </li>
             </ul>
         </div>
         {{#if token}}
@@ -41,6 +44,7 @@
     </nav>
     {{{body}}}
     <script src="edit-pages.js"></script>
+    <script src="internal-searching.js"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
         integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
         crossorigin="anonymous"></script>

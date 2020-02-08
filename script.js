@@ -21,6 +21,7 @@ const imageController = require('./db/controllers/images-controller');
 const sharedMapForm = require('./shared/shared_map_form');
 const sharedCoreData = require('./shared/shared_core_data');
 const indexing = require('./indexing/indexing');
+const searchPages = require('./searching/search_pages.js');
 
 const webserver = express();
 const port = 7480;
@@ -140,6 +141,23 @@ webserver.get('/edit-pages', async (req, res) => {
     }
 });
 
+webserver.get('/internal-searching', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = internal-searching');
+
+    try {
+        // const coreDataList = await coreDataController.getCoreData();
+        // const coreCafeDataList = await coreCafeController.getCoreCafeData();
+        // let pageData = {
+        //     cafes: [...coreDataList, ...coreCafeDataList],
+        //     token: req.cookies.token
+        // };
+        res.render('internal-searching');
+
+    } catch (error) {
+        addLog(logFilePath, error);
+    }
+});
+
 webserver.get('/cafe-:urlcode', async (req, res) => {
     let pageUrlCode = req.params.urlcode;
     addLog(logFilePath, 'страница, urlcode = ', pageUrlCode);
@@ -232,6 +250,19 @@ webserver.post('/save-image', async (req, res) => {
             await imageController.updateImageUrlById(req.body.imageId, req.file.originalname);
         }
         res.sendStatus(200);
+    } catch (error) {
+        addLog(logFilePath, error);
+    }
+});
+
+
+webserver.post('/search', async (req, res) => {
+    addLog(logFilePath, 'страница, urlcode = search');
+
+    try {
+        const resultBlock = await searchPages.getSearchResult(req.body.searchText, req.cookies.token);
+        res.send(resultBlock);
+
     } catch (error) {
         addLog(logFilePath, error);
     }

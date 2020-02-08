@@ -53,18 +53,11 @@ async function processURL(urlInfo) {
 
     // в таблице index_urls проверяем, есть ли такой УРЛ
     let indexUrls = await indexUrlsController.getHtmlCrcByUrl(urlInfo.url);
-    // let indexUrls = await selectQueryFactory(connection, `select id, html_crc from index_urls where url=?;`, [urlInfo.url]);
     if (indexUrls.length === 0) {
         // такого УРЛа раньше не было - добавляем...
 
         const indexUrlId = await indexUrlsController.addIndexData({ ...urlInfo, title: title, html_crc: htmlCRC });
-        console.log(indexUrlId)
-        // await modifyQueryFactory(connection, `
-        //     insert into index_urls(url,title,group_code,group_params,html_crc,add_dt,actual_flag,last_render_dt,last_modification_dt) 
-        //     values (?,?,?,?,?,now(),1,now(),now())
-        // ;`, [urlInfo.url, title, urlInfo.groupCode, JSON.stringify(urlInfo.groupParams), htmlCRC]);
 
-        // const indexUrlId = await getLastInsertedId(connection);
         // и индексируем содержимое
         await indexURLContent(indexUrlId, html);
     }
@@ -74,14 +67,12 @@ async function processURL(urlInfo) {
 
         // проставляем, что он актуальный и его дату-время последнего рендера
         await indexUrlsController.updateActualPages(indexUrlId);
-        // await modifyQueryFactory(connection, `update index_urls set actual_flag=1, last_render_dt=now() where id=?;`, [indexUrlId]);
 
         // проверяем, изменилось ли содержимое этого УРЛа (если содержимое изменилось - CRC тоже изменилось)
         if (indexUrls[0].html_crc !== htmlCRC) {
             // содержимое изменилось! надо переиндексировать
             await indexURLContent(indexUrlId, html);
             await indexUrlsController.updateReindexingPage({ title: title, html_crc: htmlCRC, id: indexUrlId });
-            // await modifyQueryFactory(connection, `update index_urls set title=?, html_crc=?, last_modification_dt=now() where id=?;`, [title, htmlCRC, indexUrlId]);
         }
 
     }
@@ -93,16 +84,12 @@ async function indexURLContent(indexUrlId, html) {
     // (полагаем, что выделений тегами прямо посреди слов не бывает)
     // ещё лучше было бы открытие/закрытие блочных тегов заменить на \n, а строчных - на пробел, получилось бы лучше форматировать результаты поиска
     let text = sharedIndexing.removeTags(html, " ");
-    console.log(text)
     // удаляем все старые слова по этому УРЛу из таблицы
     await indexUrlsWordsController.deleteIndexUrlWords(indexUrlId);
-    // await modifyQueryFactory(connection, `delete from index_urls_words where index_url=?;`, [indexUrlId]);
 
-    // добавляем все новые слова по этому УРЛу
-    // можно сделать много SQL-запросов insert, но это очень неэффективно
-    // скомпонуем один запрос в формате insert into таблица(поля) values (значения), (значения), (значения);
-    // let valuesTexts = [];
-    // let valuesDatas = [];
+    // // добавляем все новые слова по этому УРЛу
+    // // можно сделать много SQL-запросов insert, но это очень неэффективно
+    // // скомпонуем один запрос в формате insert into таблица(поля) values (значения), (значения), (значения);
 
     let updateDataArray = [];
 
@@ -110,7 +97,6 @@ async function indexURLContent(indexUrlId, html) {
         let searchRes = sharedConfig.WORD_RE.exec(text);
         if (!searchRes)
             break;
-        console.log(searchRes[0], searchRes.index);
 
         let updateDataObject = {
             index_url: indexUrlId,
@@ -119,13 +105,9 @@ async function indexURLContent(indexUrlId, html) {
         };
 
         updateDataArray.push(updateDataObject)
-
-        // valuesTexts.push(`(${indexUrlId},${searchRes.index},?)`);
-        // valuesDatas.push(searchRes[0].toUpperCase());
     }
     if (updateDataArray.length) {
         await indexUrlsWordsController.addIndexUrlWords(updateDataArray);
-        // await modifyQueryFactory(connection, `insert into index_urls_words(index_url,clean_txt_index,word) values ${valuesTexts.join(", ")};`, valuesDatas);
     }
 }
 

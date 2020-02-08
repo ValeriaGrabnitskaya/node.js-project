@@ -23,3 +23,20 @@ exports.addIndexUrlWords = async function (updateDataArray) {
             });
     })
 };
+
+exports.getSearchWords = async function (wordArray) {
+    return new Promise((resolve, reject) => {
+        IndexUrlsWords.findAll({
+            where: {
+                word: wordArray,
+            },
+            attributes: ['index_url', 'clean_txt_index', 'word'],
+            order: ['index_url', 'clean_txt_index'],
+            raw: true
+        })
+            .then(data => {
+                resolve(data);
+            })
+            .catch(err => reject(err));
+    })
+};

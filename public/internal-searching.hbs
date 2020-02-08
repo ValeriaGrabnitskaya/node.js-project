@@ -1,0 +1,14 @@
+<div class="container-fluid mt-3 w-50">
+    <form name="searchForm" action="/search" method="POST" enctype="multipart/form-data">
+        <div class="form-row">
+            <div class="col">
+                <input type="text" placeholder="Введите текст" name="searchText" value="" class="form-control">
+            </div>
+            <div class="col">
+                <button type="button" onclick="search()" class="btn btn-primary">Поиск</button>
+            </div>
+        </div>
+    </form>
+    <div id="searchResult">
+    </div>
+</div>
