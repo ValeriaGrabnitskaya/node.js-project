@@ -1,0 +1,309 @@
+-- MySQL dump 10.13  Distrib 8.0.18, for Win64 (x86_64)
+--
+-- Host: localhost    Database: node_project
+-- ------------------------------------------------------
+-- Server version	8.0.18
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Current Database: `node_project`
+--
+
+/*!40000 DROP DATABASE IF EXISTS `node_project`*/;
+
+CREATE DATABASE /*!32312 IF NOT EXISTS*/ `node_project` /*!40100 DEFAULT CHARACTER SET utf8 */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+USE `node_project`;
+
+--
+-- Table structure for table `block_types`
+--
+
+DROP TABLE IF EXISTS `block_types`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `block_types` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `code` varchar(45) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `block_types`
+--
+
+LOCK TABLES `block_types` WRITE;
+/*!40000 ALTER TABLE `block_types` DISABLE KEYS */;
+INSERT INTO `block_types` VALUES (1,'HEADER','заголовок'),(2,'IMAGE','картинка'),(7,'HTML_TEXT','текст из html редактора'),(8,'TEXT','текст'),(9,'TABLE','таблица');
+/*!40000 ALTER TABLE `block_types` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `cafe_block_name`
+--
+
+DROP TABLE IF EXISTS `cafe_block_name`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `cafe_block_name` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `cafe_block_name`
+--
+
+LOCK TABLES `cafe_block_name` WRITE;
+/*!40000 ALTER TABLE `cafe_block_name` DISABLE KEYS */;
+INSERT INTO `cafe_block_name` VALUES (1,'Название заведения'),(2,'Описание'),(3,'Адрес');
+/*!40000 ALTER TABLE `cafe_block_name` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `core_cafe_data`
+--
+
+DROP TABLE IF EXISTS `core_cafe_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `core_cafe_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url_code` varchar(45) NOT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `content_id` int(11) NOT NULL,
+  `metakeywords` varchar(50) NOT NULL,
+  `metadescription` varchar(50) NOT NULL,
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `core_cafe_data`
+--
+
+LOCK TABLES `core_cafe_data` WRITE;
+/*!40000 ALTER TABLE `core_cafe_data` DISABLE KEYS */;
+INSERT INTO `core_cafe_data` VALUES (1,'astoria','Astoria Riverside',3,'астория, кафе','уютное кафе');
+/*!40000 ALTER TABLE `core_cafe_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `core_page_data`
+--
+
+DROP TABLE IF EXISTS `core_page_data`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `core_page_data` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `url_code` varchar(45) NOT NULL,
+  `title` varchar(45) DEFAULT NULL,
+  `content_id` int(11) NOT NULL,
+  `metakeywords` varchar(50) NOT NULL,
+  `metadescription` varchar(50) NOT NULL,
+  UNIQUE KEY `id_UNIQUE` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `core_page_data`
+--
+
+LOCK TABLES `core_page_data` WRITE;
+/*!40000 ALTER TABLE `core_page_data` DISABLE KEYS */;
+INSERT INTO `core_page_data` VALUES (1,'main-page','Главная',1,'кафе, забронировать, ресторан, популярные','главная страница кафе'),(2,'catalog','Список заведений',2,'каталог для поиска  кафе','список кафе для бронирования');
+/*!40000 ALTER TABLE `core_page_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `images`
+--
+
+DROP TABLE IF EXISTS `images`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `images` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `code` varchar(45) NOT NULL,
+  `url` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `images`
+--
+
+LOCK TABLES `images` WRITE;
+/*!40000 ALTER TABLE `images` DISABLE KEYS */;
+INSERT INTO `images` VALUES (1,'ASTORIA_RIVERSIDE','3.jpg');
+/*!40000 ALTER TABLE `images` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `index_urls`
+--
+
+DROP TABLE IF EXISTS `index_urls`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `index_urls` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'идентификатор',
+  `url` varchar(200) NOT NULL DEFAULT '' COMMENT 'URL страницы',
+  `title` varchar(250) NOT NULL DEFAULT '' COMMENT 'title страницы',
+  `group_code` varchar(10) NOT NULL DEFAULT '' COMMENT 'группа УРЛов - indpage, new...',
+  `group_params` varchar(250) NOT NULL DEFAULT '' COMMENT 'параметры группы УРЛа в формате JSON - код для УРЛа индивидуальной страницы, код для УРЛа новости...',
+  `html_crc` varchar(64) NOT NULL DEFAULT '' COMMENT 'CRC сырого содержимого УРЛа',
+  `clean_txt` mediumtext COMMENT 'содержимое УРЛа с вычищенными тегами',
+  `add_dt` datetime NOT NULL COMMENT 'дата-время добавления УРЛа в этот список',
+  `actual_flag` smallint(6) NOT NULL DEFAULT '0' COMMENT 'признак для быстрого обнаружения неактуальных УРЛов',
+  `last_render_dt` datetime NOT NULL COMMENT 'дата-время последнего формирования сырого содержимого УРЛа',
+  `last_modification_dt` datetime NOT NULL COMMENT 'дата-время последнего изменения сырого содержимого УРЛа',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `index_urls`
+--
+
+LOCK TABLES `index_urls` WRITE;
+/*!40000 ALTER TABLE `index_urls` DISABLE KEYS */;
+INSERT INTO `index_urls` VALUES (14,'/main-page','Главная','core_pages','{\"corePagesURLCode\":\"main-page\"}','71d6199caff1e4a0d130503a68a9167289beef676eea0e0605fa5295a2f7c72d',NULL,'2020-02-08 13:00:05',1,'2020-02-08 18:20:21','2020-02-08 18:19:44'),(15,'/catalog','Список заведений','core_pages','{\"corePagesURLCode\":\"catalog\"}','2e81bc9bfa8c2d027ce4501bf40c77783622a5cf6853ce03cc6818f7d7dc402c',NULL,'2020-02-08 13:00:05',1,'2020-02-08 18:20:21','2020-02-08 18:20:21'),(16,'/cafe-astoria','Astoria Riverside','cafe','{\"cafeURLCode\":\"astoria\"}','9b1d8e8b6135463f1dd5c73b020a7bf86e8ae1eb5c67f346ada80f35d7ccd1b9',NULL,'2020-02-08 13:00:05',1,'2020-02-08 18:20:21','2020-02-08 18:20:22');
+/*!40000 ALTER TABLE `index_urls` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `index_urls_words`
+--
+
+DROP TABLE IF EXISTS `index_urls_words`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `index_urls_words` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT COMMENT 'идентификатор',
+  `index_url` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'УРЛ сайта (id в index_urls)',
+  `clean_txt_index` int(11) unsigned NOT NULL DEFAULT '0' COMMENT 'индекс начала слова в clean_txt содержимого УРЛа',
+  `word` varchar(20) NOT NULL DEFAULT '' COMMENT 'слово',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1284 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `index_urls_words`
+--
+
+LOCK TABLES `index_urls_words` WRITE;
+/*!40000 ALTER TABLE `index_urls_words` DISABLE KEYS */;
+INSERT INTO `index_urls_words` VALUES (829,14,61,'ГЛАВНАЯ'),(830,14,95,'CAFE'),(831,14,206,'ГЛАВНАЯ'),(832,14,216,'CURRENT'),(833,14,287,'СПИСОК'),(834,14,294,'ЗАВЕДЕНИЙ'),(835,14,365,'РЕДАКТИРОВАТЬ'),(836,14,379,'СТРАНИЦЫ'),(837,14,449,'ВНУТРЕННИЙ'),(838,14,460,'ПОИСК'),(839,14,522,'ВЫЙТИ'),(1138,15,61,'СПИСОК'),(1139,15,68,'ЗАВЕДЕНИЙ'),(1140,15,104,'CAFE'),(1141,15,215,'ГЛАВНАЯ'),(1142,15,225,'CURRENT'),(1143,15,296,'СПИСОК'),(1144,15,303,'ЗАВЕДЕНИЙ'),(1145,15,374,'РЕДАКТИРОВАТЬ'),(1146,15,388,'СТРАНИЦЫ'),(1147,15,458,'ВНУТРЕННИЙ'),(1148,15,469,'ПОИСК'),(1149,15,531,'ВЫЙТИ'),(1150,15,558,'КАТАЛОГ'),(1151,15,566,'ЗАВЕДЕНИЙ'),(1152,15,607,'НАЗВАНИЕ'),(1153,15,616,'ЗАВЕДЕНИЯ'),(1154,15,627,'ОПИСАНИЕ'),(1155,15,637,'АДРЕС'),(1156,15,667,'ASTORIA'),(1157,15,675,'RIVERSIDE'),(1158,15,688,'КРУПНЕЙШИЙ'),(1159,15,699,'РЕСТОРАННЫЙ'),(1160,15,711,'КОМПЛЕКС'),(1161,15,721,'ASTORIA'),(1162,15,729,'RIVERSIDE'),(1163,15,740,'СТАЛ'),(1164,15,745,'САМЫМ'),(1165,15,751,'УЗНАВАЕМЫМ'),(1166,15,762,'ЗАВЕДЕНИЕМ'),(1167,15,773,'МИНСКА'),(1168,15,781,'КУДА'),(1169,15,786,'СТРЕМЯТСЯ'),(1170,15,796,'ПОПАСТЬ'),(1171,15,807,'ТОЛЬКО'),(1172,15,814,'ЛЮБИТЕЛИ'),(1173,15,823,'РОСКОШИ'),(1174,15,833,'УЮТА'),(1175,15,844,'ЦЕНИТЕЛИ'),(1176,15,853,'РАЗМЕРЕННОГО'),(1177,15,868,'СПОКОЙНОГО'),(1178,15,879,'ОТДЫХА'),(1179,15,887,'РАСПОЛОЖЕН'),(1180,15,901,'ЖИВОПИСНОМ'),(1181,15,912,'БЕРЕГУ'),(1182,15,919,'ВОДОХРАНИЛИЩА'),(1183,15,934,'ДРОЗДЫ'),(1184,15,944,'УДОБНОЙ'),(1185,15,952,'ПАРКОВКОЙ'),(1186,15,965,'БОЛЕЕ'),(1187,15,979,'МАШИНОМЕСТ'),(1188,15,991,'АЗЕРБАЙДЖАНСКАЯ'),(1189,15,1009,'ЕВРОПЕЙСКАЯ'),(1190,15,1021,'КУХНЯ'),(1191,15,1030,'ВАШИМ'),(1192,15,1036,'УСЛУГАМ'),(1193,15,1045,'БАНКЕТНЫЕ'),(1194,15,1055,'ЗАЛЫ'),(1195,15,1061,'КАЛЬЯННЫЙ'),(1196,15,1080,'КОМНАТЫ'),(1197,15,1089,'ТЕРРАСА'),(1198,15,1098,'ШАТЕР'),(1199,15,1105,'БАНКЕТНЫЕ'),(1200,15,1115,'КОТТЕДЖИ'),(1201,15,1125,'БЕСЕДКИ'),(1202,15,1134,'ДЕТСКАЯ'),(1203,15,1142,'ПЛОЩАДКА'),(1204,15,1152,'ПОДАРОЧНЫЕ'),(1205,15,1163,'СЕРТИФИКАТЫ'),(1206,15,1178,'ЛЮБОЙ'),(1207,15,1184,'ВКУС'),(1208,15,1189,'ВОЗМОЖНО'),(1209,15,1198,'ПРОВЕДЕНИЕ'),(1210,15,1209,'МАСШТАБНЫХ'),(1211,15,1220,'МЕРОПРИЯТИЙ'),(1212,15,1235,'АДРЕС'),(1213,15,1246,'ГАВАНЬ'),(1214,16,61,'ASTORIA'),(1215,16,69,'RIVERSIDE'),(1216,16,105,'CAFE'),(1217,16,216,'ГЛАВНАЯ'),(1218,16,226,'CURRENT'),(1219,16,297,'СПИСОК'),(1220,16,304,'ЗАВЕДЕНИЙ'),(1221,16,375,'РЕДАКТИРОВАТЬ'),(1222,16,389,'СТРАНИЦЫ'),(1223,16,459,'ВНУТРЕННИЙ'),(1224,16,470,'ПОИСК'),(1225,16,532,'ВЫЙТИ'),(1226,16,559,'ASTORIA'),(1227,16,567,'RIVERSIDE'),(1228,16,578,'КРУПНЕЙШИЙ'),(1229,16,589,'РЕСТОРАННЫЙ'),(1230,16,601,'КОМПЛЕКС'),(1231,16,611,'ASTORIA'),(1232,16,619,'RIVERSIDE'),(1233,16,630,'СТАЛ'),(1234,16,635,'САМЫМ'),(1235,16,641,'УЗНАВАЕМЫМ'),(1236,16,652,'ЗАВЕДЕНИЕМ'),(1237,16,663,'МИНСКА'),(1238,16,671,'КУДА'),(1239,16,676,'СТРЕМЯТСЯ'),(1240,16,686,'ПОПАСТЬ'),(1241,16,697,'ТОЛЬКО'),(1242,16,704,'ЛЮБИТЕЛИ'),(1243,16,713,'РОСКОШИ'),(1244,16,723,'УЮТА'),(1245,16,734,'ЦЕНИТЕЛИ'),(1246,16,743,'РАЗМЕРЕННОГО'),(1247,16,758,'СПОКОЙНОГО'),(1248,16,769,'ОТДЫХА'),(1249,16,777,'РАСПОЛОЖЕН'),(1250,16,791,'ЖИВОПИСНОМ'),(1251,16,802,'БЕРЕГУ'),(1252,16,809,'ВОДОХРАНИЛИЩА'),(1253,16,824,'ДРОЗДЫ'),(1254,16,834,'УДОБНОЙ'),(1255,16,842,'ПАРКОВКОЙ'),(1256,16,855,'БОЛЕЕ'),(1257,16,869,'МАШИНОМЕСТ'),(1258,16,881,'АЗЕРБАЙДЖАНСКАЯ'),(1259,16,899,'ЕВРОПЕЙСКАЯ'),(1260,16,911,'КУХНЯ'),(1261,16,920,'ВАШИМ'),(1262,16,926,'УСЛУГАМ'),(1263,16,935,'БАНКЕТНЫЕ'),(1264,16,945,'ЗАЛЫ'),(1265,16,951,'КАЛЬЯННЫЙ'),(1266,16,970,'КОМНАТЫ'),(1267,16,979,'ТЕРРАСА'),(1268,16,988,'ШАТЕР'),(1269,16,995,'БАНКЕТНЫЕ'),(1270,16,1005,'КОТТЕДЖИ'),(1271,16,1015,'БЕСЕДКИ'),(1272,16,1024,'ДЕТСКАЯ'),(1273,16,1032,'ПЛОЩАДКА'),(1274,16,1042,'ПОДАРОЧНЫЕ'),(1275,16,1053,'СЕРТИФИКАТЫ'),(1276,16,1068,'ЛЮБОЙ'),(1277,16,1074,'ВКУС'),(1278,16,1079,'ВОЗМОЖНО'),(1279,16,1088,'ПРОВЕДЕНИЕ'),(1280,16,1099,'МАСШТАБНЫХ'),(1281,16,1110,'МЕРОПРИЯТИЙ'),(1282,16,1124,'АДРЕС'),(1283,16,1135,'ГАВАНЬ');
+/*!40000 ALTER TABLE `index_urls_words` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `page_content`
+--
+
+DROP TABLE IF EXISTS `page_content`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `page_content` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `content_id` int(11) NOT NULL,
+  `content_order` int(11) NOT NULL,
+  `block_type` int(11) NOT NULL,
+  `block_content` varchar(10000) DEFAULT NULL,
+  `cafe_block_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `page_content`
+--
+
+LOCK TABLES `page_content` WRITE;
+/*!40000 ALTER TABLE `page_content` DISABLE KEYS */;
+INSERT INTO `page_content` VALUES (2,1,1,2,'1',NULL),(3,2,0,1,'Каталог заведений',NULL),(8,3,0,1,'Astoria Riverside',1),(9,3,1,7,'<p>Крупнейший ресторанный комплекс «Astoria Riverside» стал самым узнаваемым заведением Минска, куда стремятся попасть не только любители роскоши и уюта, но и ценители размеренного и спокойного отдыха.<br>Расположен на живописном берегу водохранилища «Дрозды» с удобной парковкой на более чем 250 машиномест.<br>Азербайджанская и европейская кухня.<br>К вашим услугам: банкетные залы, кальянный зал, VIP комнаты, терраса, шатер, банкетные коттеджи, беседки, детская площадка.<br>Подарочные сертификаты на любой вкус<br>Возможно проведение масштабных мероприятий.</p>',2),(10,3,2,8,'Адрес: ул. Гавань, 13',3),(11,2,1,9,'1,2,3',NULL);
+/*!40000 ALTER TABLE `page_content` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(45) NOT NULL,
+  `token` varchar(45) NOT NULL,
+  `last_session_date` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=70 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `sessions`
+--
+
+LOCK TABLES `sessions` WRITE;
+/*!40000 ALTER TABLE `sessions` DISABLE KEYS */;
+INSERT INTO `sessions` VALUES (1,'admin','dexd31QtOdMA7kWCmyUg/uccMbs=',1577836800),(2,'admin','7Hnb/W4cv4OE6mpOOp4ahh0tjCA=',1577836800),(3,'admin','IRZj9Zw70oQiRtL29FIKrJYYBRI=',1577836800),(4,'admin','FOFjhgROk6RrgS2f1A4wJ8O/ylY=',1577836800),(5,'admin','zOKIB4QPBU3ralFJ0/6KZGiqGwc=',1577836800),(6,'admin','TX9VTEm2JnUStycdpV2+JNMinTE=',1577836800),(7,'admin','JCjlIaq11jTIjtl/aEEpNnrJWjc=',1577836800),(8,'admin','rOFo32sVUHrCem5nBqBG8Iv5sqE=',1577836800),(9,'admin','u/xLcrb2H+a9Ul3j9AXiQ+N/MB0=',1577836800),(10,'admin','Bwmr9PISUIFGinSqn2BAyxfO18Q=',1577836800),(11,'admin','kTP5m4ukVLAki+KP0DSjg15PoNU=',1577836800),(12,'admin','W3cpPpnb7IL3sQveND1tDIvWRzg=',1577836800),(13,'admin','+Aa32Ja/lPcKTrTrtJEo9uYKeFc=',1577836800),(14,'admin','utL+36ScX0ouGOr2drTQpsuYbFg=',1577836800),(15,'admin','Pjpywym7CPPOQpjaWYglMiQr+18=',1577836800),(16,'admin','B7L7IRCgiDiH2HZkRnmoflJCEQw=',1577836800),(17,'admin','WTPOAE6LBVf2/RKJdAQCKsxgP0w=',1577836800),(18,'admin','T5P8UXQq8R9abHlzNZVo+Q7t3u0=',1577836800),(19,'admin','GH+SRPvasOw/rMJ+FOIb36JA2NA=',1577836800),(20,'admin','6wnevOZzlN/QWc+ltliGdAEzBzA=',1577836800),(21,'admin','ZLbis8oKc6v0fwl0lWt3Xbd7q4o=',1577836800),(22,'admin','mLv2z5Y1UdzMJFyCDNZWp9IzPI4=',1577836800),(23,'admin','JWMntogbEb+SVlB7qS8mqrY9UlQ=',1577836800),(24,'admin','Hpm5YJXba1NRXsIg8AKehtWYD84=',1577836800),(25,'admin','xzvqRqKnBZG/DCR0INotKI5FS/s=',1577836800),(26,'admin','fnSfIQzUhwoLYhaZvPXKubvPGbc=',1577836800),(27,'admin','EI2xZDwCrgdMUA9RGYNeKF9i5vc=',1577836800),(28,'admin','IXoCeHYfnSXpg/sqN1By36A8k1M=',1577836800),(29,'admin','OFLtbvM6DxR3epz5kW6SvNdiNgk=',1577836800),(30,'admin','644vEeaMM7/IV74FMob8SLIu1sw=',1577836800),(31,'admin','O6XTGM0DZkD9ldCrP2Ug7AbLMzA=',1577836800),(32,'admin','/qaNrKviK9Pv48ZhF3zoJffFW14=',1577836800),(33,'admin','UUsdAzuBmpqpxcDJrnuDLcmvZaA=',1577836800),(34,'admin','abOfm82dkm6UkC35MM0Xi3iLGJk=',1577836800),(35,'admin','e4Rj57CieBlErNSEhuIlhJAfnaE=',1577836800),(36,'admin','GqOCqmFTUxblMsAsdCg2fhQGgrU=',1577836800),(37,'admin','evSXcbNLyDXdcpyODlKzwPnm9YE=',1577836800),(38,'admin','mvZWQuO/jqjlCx4suyQtPJgQdZk=',1577836800),(39,'admin','Rht6XGl072riOZIUeb5Ii9nV9qk=',1577836800),(40,'admin','UCNDtbYLIEDlg+0WkRW48+pahP4=',1577836800),(41,'admin','5c7WGsDad64/oI+lNi8DfJzbYzk=',1577836800),(42,'admin','vXYteTsV2DVSr+JW8kk2kFzC3ws=',1577836800),(43,'admin','I8uY2qKC1uXvFqzlazuTz4c7J0M=',1577836800),(44,'admin','lzqKcJ544HgmIgKHfXa2qXJ4vsg=',1577836800),(45,'admin','KlBuxePV0hVu6n+hVnTSOn1ugfE=',1577836800),(46,'admin','i47i9TnxYCswCRKEVbkTLTAw+U8=',1577836800),(47,'admin','7ICFTblvKFesuQ00oLfQtXiAi58=',1577836800),(48,'admin','utUQuxATJk/JHSnkDLlzlTZL59c=',1577836800),(49,'admin','86izf4TCvCkiAJg2xH+l5Cm5Wh0=',1577836800),(50,'admin','1cYWu93l3bYnkk0LaWxpxtHvpWA=',1577836800),(51,'admin','Mh5sQd68Ild5Z3MHk7KzdNmYm0U=',1577836800),(52,'admin','8b+exGhIXQSMALDxWguFobWjcjs=',1577836800),(53,'admin','K0ioTeaJqoydDOc5mLtxgAOQJSc=',1577836800),(54,'admin','mnVBLW2KekCaqioxB9jKoZlCcdk=',1577836800),(55,'admin','sg7bkaag9d+nulXmguPbTGVBYUE=',1577836800),(56,'admin','uhf4dYm4f/kOBqtVOgDO1GQjJA4=',1577836800),(57,'admin','HWpV3WgQvmP6goHhQ7VZ/+x4rrw=',1577836800),(58,'admin','OndRxsWX49/aYG9ortYHgoWn3PM=',1577836800),(59,'admin','rT/6VqwvyUGtG07SpZiNpzmq7TU=',1577836800),(60,'admin','siRTTQ7YiAIqeQHLsXmUSD8zv48=',1577836800),(61,'admin','HzyDP1sAoFjGd1BxxaNDgv7sg3E=',1577836800),(62,'admin','fqTNCWUPytGp1AVHpE+HPS+SOuQ=',1577836800),(63,'admin','7wD8eTye5k8rIchZPtRK+MH0aW0=',1577836800),(64,'admin','lb0Nj9sh/MZC+jGFrD9V3XVX8Ns=',1577836800),(65,'admin','4O09aHVBE7r/DvDwxY6bORJXEDc=',1577836800),(66,'admin','kDERir+fJ6EnAmFJgddIJBiCCi4=',1577836800),(67,'admin','hL/MXV4pRMzLe1zLyQ4d7ErAc9M=',1577836800),(68,'admin','uH6tpzJTJzcBaSKrwmA5rk32J7E=',1577836800),(69,'admin','NrXMkn51ZAmgR/uXA29X7xEoKec=',1577836800);
+/*!40000 ALTER TABLE `sessions` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `login` varchar(45) NOT NULL,
+  `password` varchar(200) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `id_UNIQUE` (`id`),
+  UNIQUE KEY `password_UNIQUE` (`password`),
+  UNIQUE KEY `login_UNIQUE` (`login`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `users`
+--
+
+LOCK TABLES `users` WRITE;
+/*!40000 ALTER TABLE `users` DISABLE KEYS */;
+INSERT INTO `users` VALUES (1,'admin','8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918pswd');
+/*!40000 ALTER TABLE `users` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2020-02-09  1:16:42
