@@ -1,0 +1,2 @@
+0 * * * * mysqldump -uroot -p1234 --databases --add-drop-database node_project > /home/user/node.js-project/cron/node_project_dump
+0 * * * * node /home/user/node.js-project/cron/zipFiles.js
